@@ -787,6 +787,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
     <div class="action-bar">
       <span id="saveStatus" style="font-size:12px;color:#aaa;"></span>
       <div class="spacer"></div>
+      <button class="btn btn-outline" id="saveBtn" onclick="saveNowMsg()" style="margin-right: 8px;">임시저장</button>
       <button class="btn btn-primary" id="submitBtn" onclick="submitLog()">제출하기</button>
     </div>
   </div>
@@ -1191,6 +1192,11 @@ async function saveNow() {
   } catch { document.getElementById('saveStatus').textContent = '저장 실패'; }
 }
 
+async function saveNowMsg() {
+  await saveNow();
+  showToast('임시저장 되었습니다.');
+}
+
 function collectData() {
   ['today','tomorrow','special'].forEach(sec => {
     const rows = document.querySelectorAll(`#tbody-${sec} tr`);
@@ -1395,8 +1401,9 @@ function renderAdminCardsGrid() {
       ? `<button type="button" class="badge badge-confirmed admin-badge-toggle" data-admin-toggle data-emp-idx="${c.empIdx}" title="클릭하면 확인 취소">확인됨</button>`
       : '<span class="badge badge-submitted">제출</span>';
     const confirmBtn = c.adminConfirmed
-      ? `<button type="button" class="btn btn-sm btn-outline" data-admin-toggle data-emp-idx="${c.empIdx}" title="클릭하면 확인 취소">확인 취소</button>`
-      : `<button type="button" class="btn btn-sm btn-green" data-admin-toggle data-emp-idx="${c.empIdx}">확인</button>`;
+      ? `<button type="button" class="btn btn-sm btn-outline" data-admin-toggle data-emp-idx="\${c.empIdx}" title="클릭하면 확인 취소">확인 취소</button>`
+      : `<button type="button" class="btn btn-sm btn-green" style="margin-right:4px;" data-admin-toggle data-emp-idx="\${c.empIdx}">확인</button>
+         <button type="button" class="btn btn-sm btn-outline" style="color:var(--red);border-color:var(--red);" onclick="rejectLog(\${c.empIdx}, '\${c.date}')" title="보고자에게 다시 작성하도록 반송합니다">반송</button>`;
 
     const confirmedClass = c.adminConfirmed ? ' admin-card-confirmed' : '';
     return `<div class="admin-card${confirmedClass}" style="border-top-color:${empColor.color}">
@@ -1476,6 +1483,21 @@ async function toggleAdminConfirm(empIdx) {
     showToast('네트워크 오류로 처리에 실패했습니다.');
   } finally {
     adminConfirmBusy = false;
+  }
+}
+
+async function rejectLog(empIdx, date) {
+  if (!confirm('업무일지를 반송 처리하시겠습니까? (작성자에게 미제출 상태로 되돌아갑니다)')) return;
+  try {
+    const r = await fetch(`/api/reject/\${empIdx}/\${date}`, { method: 'POST' });
+    if (r.ok) {
+      showToast('반송 처리 되었습니다.');
+      await loadAdminCards();
+    } else {
+      showToast('반송 처리에 실패했습니다.');
+    }
+  } catch {
+    showToast('네트워크 오류');
   }
 }
 

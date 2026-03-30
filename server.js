@@ -287,6 +287,27 @@ app.post('/api/confirm/:empIdx/:date', async (req, res) => {
   }
 });
 
+// ======== API: Admin 반송 (Return/Reject) ========
+app.post('/api/reject/:empIdx/:date', async (req, res) => {
+  const empIdx = parseInt(req.params.empIdx, 10);
+  const dateStr = req.params.date;
+  try {
+    const { rows } = await pool.query('SELECT * FROM work_logs WHERE emp_idx = $1 AND date_str = $2', [empIdx, dateStr]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: '데이터가 없습니다.' });
+    }
+    
+    // Set submitted and admin_confirmed to false
+    await pool.query('UPDATE work_logs SET submitted = false, submitted_at = null, admin_confirmed = false, confirmed_at = null WHERE emp_idx = $1 AND date_str = $2', [empIdx, dateStr]);
+    
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('[api/reject POST]', e);
+    res.status(500).json({ error: '데이터 변경 중 오류' });
+  }
+});
+
 // ======== API: Admin cards (all submitted for a date) ========
 app.get('/api/admin/cards/:date', async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
