@@ -1110,9 +1110,9 @@ function dismissBookmarkHint() {
 
 function initBookmarkHintBar() {
   if (location.protocol === 'file:') return;
-  try {
-    if (localStorage.getItem('bookmarkHintDismissed') === '1') return;
-  } catch (_) {}
+  // try {
+  //   if (localStorage.getItem('bookmarkHintDismissed') === '1') return;
+  // } catch (_) {}
   const bar = document.getElementById('bookmarkHint');
   const textEl = document.getElementById('bookmarkHintText');
   if (!bar || !textEl) return;
