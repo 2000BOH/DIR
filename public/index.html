@@ -1117,11 +1117,7 @@ function initBookmarkHintBar() {
   const textEl = document.getElementById('bookmarkHintText');
   if (!bar || !textEl) return;
   const o = location.origin;
-  textEl.innerHTML =
-    `이 주소 <strong>${esc(o)}</strong> 를 크롬 <strong>즐겨찾기(Ctrl+D)</strong>에 추가해 두면 매번 파일을 열 필요가 없습니다. ` +
-    `스마트폰이나 다른 PC 등 <strong>어디서든 이 주소로 바로 접속</strong>할 수 있습니다. ` +
-    `주소창 오른쪽에 <strong>설치</strong> 또는 <strong>앱 설치</strong>가 보이면 창 없이 쓰는 앱처럼 고정할 수 있습니다.<br>` +
-    `✅ <strong>완료된 업무는 완료체크</strong>, ⭐⭐⭐ <strong>중요도 별세개는 주간보고서에 올라갑니다.</strong>`;
+  textEl.innerHTML = `✅ <strong>완료된 업무는 완료체크</strong>, ⭐⭐⭐ <strong>중요도 별세개는 주간보고서에 올라갑니다.</strong>`;
   bar.hidden = false;
 }
 
@@ -1402,9 +1398,9 @@ function renderAdminCardsGrid() {
       ? `<button type="button" class="badge badge-confirmed admin-badge-toggle" data-admin-toggle data-emp-idx="${c.empIdx}" title="클릭하면 확인 취소">확인됨</button>`
       : '<span class="badge badge-submitted">제출</span>';
     const confirmBtn = c.adminConfirmed
-      ? `<button type="button" class="btn btn-sm btn-outline" data-admin-toggle data-emp-idx="\${c.empIdx}" title="클릭하면 확인 취소">확인 취소</button>`
-      : `<button type="button" class="btn btn-sm btn-green" style="margin-right:4px;" data-admin-toggle data-emp-idx="\${c.empIdx}">확인</button>
-         <button type="button" class="btn btn-sm btn-outline" style="color:var(--red);border-color:var(--red);" onclick="rejectLog(\${c.empIdx}, '\${c.date}')" title="보고자에게 다시 작성하도록 반송합니다">반송</button>`;
+      ? `<button type="button" class="btn btn-sm btn-outline" data-admin-toggle data-emp-idx="${c.empIdx}" title="클릭하면 확인 취소">확인 취소</button>`
+      : `<button type="button" class="btn btn-sm btn-green" style="margin-right:4px;" data-admin-toggle data-emp-idx="${c.empIdx}">확인</button>
+         <button type="button" class="btn btn-sm btn-outline" style="color:var(--red);border-color:var(--red);" onclick="rejectLog(${c.empIdx}, '${c.date}')" title="보고자에게 다시 작성하도록 반송합니다">반송</button>`;
 
     const confirmedClass = c.adminConfirmed ? ' admin-card-confirmed' : '';
     return `<div class="admin-card${confirmedClass}" style="border-top-color:${empColor.color}">
