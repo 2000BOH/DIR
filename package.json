@@ -1,0 +1,16 @@
+{
+  "name": "work-log",
+  "version": "1.0.0",
+  "description": "입주지원센터 업무일지 시스템",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "open": "cmd /c start http://localhost:3000"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
