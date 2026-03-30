@@ -434,49 +434,6 @@ app.get('/manifest.json', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==== Vercel & Local Start Logic ====
-// ======== API: TEMPORARY DUMMY SEED ========
-app.get('/api/seed-dummy-data', async (req, res) => {
-  try {
-    const EMPLOYEES = [
-      { idx: 1, name: '남식' }, { idx: 2, name: '수용' },
-      { idx: 4, name: '은정' }, { idx: 5, name: '아름' },
-      { idx: 6, name: '동훈' }, { idx: 7, name: '시우' }, { idx: 8, name: '현석' }
-    ];
-    const DATES = ['2026-03-26', '2026-03-27'];
-    const CATEGORIES = ['① 민원·고객 응대', '② 입주·퇴실 관리', '③ 시설 점검·하자보수', '⑫ 총무·일반 관리', '⑬ 회의·보고', '⑭ 임대·계약 관리'];
-
-    await pool.query('DELETE FROM work_logs');
-
-    for (const emp of EMPLOYEES) {
-      for (const date of DATES) {
-        const sections = {
-          today: [
-            { id: 'd1_'+Date.now()+Math.random().toString(36).substring(7), done: true, category: CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)], content: '금일 오전 배정된 주요 업무 처리 완료', stars: 2, carried: false },
-            { id: 'd2_'+Date.now()+Math.random().toString(36).substring(7), done: true, category: CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)], content: '오후 현장 방문 및 확인 진행', stars: 1, carried: false }
-          ],
-          tomorrow: [
-            { id: 'd3_'+Date.now()+Math.random().toString(36).substring(7), done: false, category: CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)], content: '내일 오전 팀 회의 예정사항 준비', stars: 3, carried: false }
-          ],
-          special: [
-            { id: 'd4_'+Date.now()+Math.random().toString(36).substring(7), done: false, category: '', content: '특이사항 없음.', stars: 0, carried: false }
-          ]
-        };
-
-        const submittedAt = new Date(`${date}T09:00:00.000Z`).toISOString();
-        const query = `
-          INSERT INTO work_logs (emp_idx, date_str, name, submitted, submitted_at, admin_confirmed, confirmed_at, sections)
-          VALUES ($1, $2, $3, true, $4, true, $4, $5)
-        `;
-        await pool.query(query, [emp.idx, date, emp.name, submittedAt, JSON.stringify(sections)]);
-      }
-    }
-    res.json({ ok: true, message: 'Seeded dummy data' });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
-  }
-});
-
 // Vercel Serverless Function 배포를 위한 export
 module.exports = app;
 
