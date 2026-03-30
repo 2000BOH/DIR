@@ -1118,9 +1118,10 @@ function initBookmarkHintBar() {
   if (!bar || !textEl) return;
   const o = location.origin;
   textEl.innerHTML =
-    `이 주소 <strong>\${esc(o)}</strong> 를 크롬 <strong>즐겨찾기(Ctrl+D)</strong>에 추가해 두면 매번 파일을 열 필요가 없습니다. ` +
+    `이 주소 <strong>${esc(o)}</strong> 를 크롬 <strong>즐겨찾기(Ctrl+D)</strong>에 추가해 두면 매번 파일을 열 필요가 없습니다. ` +
     `스마트폰이나 다른 PC 등 <strong>어디서든 이 주소로 바로 접속</strong>할 수 있습니다. ` +
-    `주소창 오른쪽에 <strong>설치</strong> 또는 <strong>앱 설치</strong>가 보이면 창 없이 쓰는 앱처럼 고정할 수 있습니다.`;
+    `주소창 오른쪽에 <strong>설치</strong> 또는 <strong>앱 설치</strong>가 보이면 창 없이 쓰는 앱처럼 고정할 수 있습니다.<br>` +
+    `✅ <strong>완료된 업무는 완료체크</strong>, ⭐⭐⭐ <strong>중요도 별세개는 주간보고서에 올라갑니다.</strong>`;
   bar.hidden = false;
 }
 
@@ -1489,7 +1490,7 @@ async function toggleAdminConfirm(empIdx) {
 async function rejectLog(empIdx, date) {
   if (!confirm('업무일지를 반송 처리하시겠습니까? (작성자에게 미제출 상태로 되돌아갑니다)')) return;
   try {
-    const r = await fetch(`/api/reject/\${empIdx}/\${date}`, { method: 'POST' });
+    const r = await fetch(`/api/reject/${empIdx}/${date}`, { method: 'POST' });
     if (r.ok) {
       showToast('반송 처리 되었습니다.');
       await loadAdminCards();
