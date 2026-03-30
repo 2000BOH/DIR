@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>계약관리팀 업무일지 시스템</title>
+  <!-- 구글 폰트 적용 (프리미엄한 느낌을 주는 현대적 폰트) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <style>
+    :root {
+      --primary: #0f172a; /* 짙은 네이비 */
+      --primary-hover: #1e293b;
+      --accent: #2563eb; /* 맑은 블루 */
+      --success: #16a34a;
+      --danger: #ef4444;
+      --bg: #f8fafc; /* 부드러운 화이트/그레이 배경 */
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    /* 상단 네이비 헤더 */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .status-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      backdrop-filter: blur(4px);
+      transition: all 0.3s ease;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* 카드 스타일링 */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Hover Effect 피드백 반영 (살짝 떠오르는 효과) */
+    .card:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* 폼 컨트롤 */
+    .controls {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    input[type="text"], input[type="date"], select {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: var(--bg);
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background: #fff;
+    }
+
+    /* 버튼 공통 */
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+    
+    .btn-primary:hover { background-color: #1d4ed8; transform: translateY(-2px); }
+
+    .btn-navy {
+      background-color: var(--primary);
+      color: white;
+    }
+    .btn-navy:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+    .btn-success { background-color: var(--success); color: white; }
+    .btn-success:hover { background-color: #15803d; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(16,185,129,0.2); }
+
+    .btn-danger { background-color: var(--danger); color: white; padding: 0.5rem 1rem; font-size: 0.875rem; }
+    .btn-danger:hover { background-color: #b91c1c; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+      width: 100%;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    /* 섹션 제목 */
+    h2 { font-size: 1.5rem; margin-top: 0; color: var(--primary); display: flex; align-items: center; justify-content: space-between; }
+    h3 { font-size: 1.2rem; color: var(--text-main); margin-bottom: 1rem; margin-top: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+
+    /* 할일 목록 */
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .task-list li {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      background: var(--bg);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .task-list li:hover {
+      border-color: var(--border);
+      background: #fff;
+    }
+
+    .task-list input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .task-list input[type="text"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+    }
+    
+    .task-list input[type="text"]:focus {
+      background: #fff;
+      border: 1px solid var(--accent);
+    }
+
+    /* 특별 사항 텍스트 에리어 */
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+    /* 애니메이션용 알림 */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--primary);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      z-index: 1000;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+  
+  <header>
+    <h1>계약관리팀 업무일지</h1>
+    <span id="status" class="status-badge">서버 연결 확인 중...</span>
+  </header>
+
+  <main>
+    <!-- 선택 패널 -->
+    <div class="card">
+      <div class="controls">
+        <div class="form-group">
+          <label for="empSelect">직원 선택</label>
+          <select id="empSelect">
+            <option value="">-- 직원을 선택하세요 --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dateSelect">작성 날짜</label>
+          <input type="date" id="dateSelect">
+        </div>
+        <button class="btn-navy" onclick="loadData()">불러오기</button>
+      </div>
+    </div>
+
+    <!-- 에디터 영역 (불러오기 전엔 숨김) -->
+    <div id="editor" class="card" style="display: none;">
+      <h2 id="editorTitle">
+        <span><span id="currentEmpName">홍길동</span> 님의 업무일지</span>
+        <span id="submitStatus" style="font-size: 0.9rem; font-weight: normal; color: var(--text-muted);">미작성</span>
+      </h2>
+      
+      <h3>오늘의 핵심 업무</h3>
+      <ul id="todayList" class="task-list"></ul>
+      <button class="btn-outline" onclick="addTask('today')">+ 새로운 업무 추가하기</button>
+
+      <h3>내일 진행할 업무</h3>
+      <ul id="tomorrowList" class="task-list"></ul>
+      <button class="btn-outline" onclick="addTask('tomorrow')">+ 새로운 업무 추가하기</button>
+
+      <h3>건의 사항 및 특이 사항</h3>
+      <div id="specialList" style="margin-top: 1rem;">
+        <!-- 특별 사항은 텍스트 영역 1개로 단순화 처리 -->
+      </div>
+
+      <div style="margin-top: 3rem; display: flex; gap: 1rem; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--border);">
+        <button class="btn-navy" onclick="saveData()">임시 저장</button>
+        <button class="btn-success" onclick="submitData()">최종 제출하기</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast">메시지</div>
+
+  <script>
+    // -------------------------------------------------------------
+    // 비즈니스 로직 및 상태 관리 (Business Logic & State Management)
+    // -------------------------------------------------------------
+    const API_BASE = ''; // Vercel 환경에서는 동일 도메인이므로 비워둡니다.
+    let currentData = { sections: { today: [], tomorrow: [], special: [] } };
+    let currentEmpIdx = null;
+    let currentDate = null;
+
+    // 토스트 메시지 띄우기 (마이크로 애니메이션)
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // 초기화: 오늘 날짜 세팅 및 직원 목록 로드
+    async function init() {
+      document.getElementById('dateSelect').value = new Date().toISOString().split('T')[0];
+      try {
+        const res = await fetch(API_BASE + '/api/employees');
+        if(!res.ok) throw new Error('Network error');
+        const emps = await res.json();
+        const sel = document.getElementById('empSelect');
+        emps.forEach(e => {
+          if(e.active) {
+            const opt = document.createElement('option');
+            opt.value = e.idx;
+            opt.textContent = e.name;
+            sel.appendChild(opt);
+          }
+        });
+        document.getElementById('status').textContent = '🟢 온라인 (DB 연결됨)';
+      } catch(e) {
+        document.getElementById('status').textContent = '🔴 끊김 (서버 확인 필요)';
+      }
+    }
+
+    // 데이터 불러오기 로직
+    async function loadData() {
+      const idx = document.getElementById('empSelect').value;
+      const date = document.getElementById('dateSelect').value;
+      
+      if(!idx) { showToast('직원을 먼저 선택해주세요.'); return; }
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/log/${idx}/${date}`);
+        const data = await res.json();
+        
+        // 데이터가 없으면 빈 템플릿으로 초기화
+        currentData = data || { sections: { today: [], tomorrow: [], special: [{ content: '' }] } };
+        if(!currentData.sections) currentData.sections = { today: [], tomorrow: [], special: [{ content: '' }] };
+        if(!currentData.sections.special || currentData.sections.special.length === 0) {
+          currentData.sections.special = [{ content: '' }];
+        }
+        
+        currentEmpIdx = idx;
+        currentDate = date;
+
+        // UI 갱신
+        const sel = document.getElementById('empSelect');
+        document.getElementById('currentEmpName').textContent = sel.options[sel.selectedIndex].text;
+        
+        let subText = currentData.submitted ? `✅ 제출완료 (${currentData.submittedAt.split('T')[0]})` : '📝 작성 중';
+        if(currentData.adminConfirmed) subText += ' / 👑 관리자 확인됨';
+        document.getElementById('submitStatus').innerHTML = subText;
+        
+        renderList('today', currentData.sections.today || []);
+        renderList('tomorrow', currentData.sections.tomorrow || []);
+        renderSpecial(currentData.sections.special[0]);
+        
+        document.getElementById('editor').style.display = 'block';
+        showToast('데이터를 성공적으로 불러왔습니다.');
+      } catch(e) {
+        showToast('불러오기에 실패했습니다. 다시 시도해 주세요.');
+      }
+    }
+
+    // 리스트 렌더링 함수
+    function renderList(type, list) {
+      const ul = document.getElementById(type + 'List');
+      ul.innerHTML = '';
+      list.forEach((item, i) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <input type="checkbox" ${item.done ? 'checked' : ''} onchange="updateItem('${type}', ${i}, 'done', this.checked)">
+          <input type="text" placeholder="${type === 'today' ? '오늘 완수한 주요 업무' : '내일 진행할 업무 목표'}" 
+                 value="${item.content || ''}" onchange="updateItem('${type}', ${i}, 'content', this.value)">
+          <button class="btn-danger" tabindex="-1" onclick="removeItem('${type}', ${i})">삭제</button>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    // 특별 사항 렌더링
+    function renderSpecial(item) {
+      const div = document.getElementById('specialList');
+      div.innerHTML = `
+        <textarea placeholder="건의사항, 이슈, 혹은 특별한 노트 사항을 편하게 적어주세요." 
+                  onchange="updateSpecial(this.value)">${item.content || ''}</textarea>
+      `;
+    }
+
+    // 상태 업데이트 함수들
+    function addTask(type) {
+      currentData.sections[type].push({ content: '', done: false, stars: 0 });
+      renderList(type, currentData.sections[type]);
+    }
+
+    function updateItem(type, index, field, value) {
+      currentData.sections[type][index][field] = value;
+    }
+
+    function updateSpecial(value) {
+      currentData.sections.special[0].content = value;
+    }
+
+    function removeItem(type, index) {
+      currentData.sections[type].splice(index, 1);
+      renderList(type, currentData.sections[type]);
+    }
+
+    // 서버에 저장 (UPSERT)
+    async function saveData() {
+      if(!currentEmpIdx) return;
+      try {
+        const res = await fetch(`${API_BASE}/api/log/${currentEmpIdx}/${currentDate}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sections: currentData.sections })
+        });
+        if(res.ok) showToast('임시 저장이 완료되었습니다. 💾');
+        else showToast('저장에 실패했습니다.');
+      } catch(e) {
+        showToast('네트워크 오류로 저장에 실패했습니다.');
+      }
+    }
+
+    // 최종 제출 (미완료 항목 내일로 이관)
+    async function submitData() {
+      if(!currentEmpIdx) return;
+      if(!confirm('최종 제출하시겠습니까? 오늘 미완료된 업무는 내일 업무로 자동 이관됩니다.')) return;
+      
+      // 1순위: 먼저 현재 상태를 저장
+      await saveData();
+      
+      // 2순위: Submit API 호출
+      try {
+        const res = await fetch(`${API_BASE}/api/submit/${currentEmpIdx}/${currentDate}`, { method: 'POST' });
+        if(res.ok) {
+          showToast('성공적으로 제출되었습니다! 🎉');
+          setTimeout(() => loadData(), 1000); // UI 리프레시
+        } else {
+          showToast('제출 처리 중 오류가 발생했습니다.');
+        }
+      } catch(e) {
+        showToast('서버 접속 불가로 인해 제출을 완료할 수 없습니다.');
+      }
+    }
+
+    // 앱 시작
+    init();
+  </script>
+</body>
+</html>
