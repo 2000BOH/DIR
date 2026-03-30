@@ -410,6 +410,19 @@ app.get('/manifest.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'manifest.json'));
 });
 
+// 루트 경로 접속 시 안내 메시지
+app.get('/', (req, res) => {
+  res.send(`
+    <div style="font-family: sans-serif; padding: 20px;">
+      <h2>✅ 계약관리팀 업무일지 API 서버 정상 가동 중</h2>
+      <p>서버가 Vercel에 성공적으로 배포되었습니다.</p>
+      <ul>
+        <li>상태 확인: <a href="/api/health">/api/health</a></li>
+      </ul>
+    </div>
+  `);
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==== Vercel & Local Start Logic ====
