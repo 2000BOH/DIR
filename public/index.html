@@ -1130,19 +1130,49 @@ function updateWatermark() {
 }
 
 // ============ EMPLOYEE BUTTONS ============
+let adminEmpFilter = null;
+
+function toggleAdminEmpFilter(idx) {
+  if (adminEmpFilter === idx) adminEmpFilter = null;
+  else adminEmpFilter = idx;
+  renderEmpButtons();
+  if (document.getElementById('page-admin').classList.contains('active')) {
+    renderAdminCardsGrid();
+  }
+}
+
 function renderEmpButtons() {
+  const pageReport = document.getElementById('page-report');
+  const isReport = pageReport && pageReport.classList.contains('active');
+  if (isReport) {
+    document.getElementById('employeeBar').innerHTML = '';
+    return;
+  }
+
+  const pageAdmin = document.getElementById('page-admin');
+  const isAdmin = pageAdmin && pageAdmin.classList.contains('active');
+
   document.getElementById('employeeBar').innerHTML = EMPLOYEES.map(emp => {
     const c = getEmpColor(emp.idx);
-    const isActive = emp.idx === curEmpIdx;
     const on = isEmpSlotActive(emp);
+    
+    let isActive = false;
+    let clickCtx = '';
+    
+    if (isAdmin) {
+      isActive = (adminEmpFilter === emp.idx);
+      clickCtx = on ? `onclick="toggleAdminEmpFilter(${emp.idx})"` : `disabled title="미배정 번호"`;
+    } else {
+      isActive = (emp.idx === curEmpIdx);
+      clickCtx = on ? `onclick="switchEmployee(${emp.idx})"` : `disabled title="미배정 번호"`;
+    }
+    
     const style = isActive
       ? `background:${c.color};color:white;border-color:${c.color};`
       : '';
     const cls = `emp-btn ${isActive ? 'active' : ''}${!on ? ' emp-btn-disabled' : ''}`;
-    const attrs = on
-      ? `onclick="switchEmployee(${emp.idx})"`
-      : `disabled title="미배정 번호"`;
-    return `<button type="button" class="${cls}" style="${style}" ${attrs}>${esc(getEmpBarLabel(emp))}</button>`;
+    
+    return `<button type="button" class="${cls}" style="${style}" ${clickCtx}>${esc(getEmpBarLabel(emp))}</button>`;
   }).join('');
 }
 
@@ -1311,6 +1341,7 @@ function showPage(p) {
   document.getElementById(`page-${p}`).classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === p));
   document.getElementById('watermarkWrap').style.display = p==='write' ? '' : 'none';
+  renderEmpButtons();
   if (p==='admin') loadAdminCards();
   if (p==='report') loadWeeklyReport();
 }
@@ -1338,10 +1369,12 @@ function getAdminCardFilter() {
 
 function setAdminCardFilter(mode) {
   if (!['all', 'pending', 'confirmed'].includes(mode)) mode = 'all';
+  if (mode === 'all') adminEmpFilter = null;
   localStorage.setItem('adminCardFilter', mode);
   document.querySelectorAll('#adminFilterBtns .admin-filter-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.filter === mode);
   });
+  renderEmpButtons();
   renderAdminCardsGrid();
 }
 
@@ -1360,6 +1393,8 @@ function renderAdminCardsGrid() {
   let cards = all.slice();
   if (filter === 'pending') cards = cards.filter(c => !c.adminConfirmed);
   else if (filter === 'confirmed') cards = cards.filter(c => c.adminConfirmed);
+  
+  if (adminEmpFilter !== null) cards = cards.filter(c => c.empIdx === adminEmpFilter);
 
   const nPending = all.filter(c => !c.adminConfirmed).length;
   const nConfirmed = all.filter(c => c.adminConfirmed).length;
