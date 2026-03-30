@@ -1662,16 +1662,11 @@ function renderOverview() {
 
   <div class="rpt-overview-jump">
     <span class="rpt-overview-jump-label">직원 바로가기</span>`;
-  EMPLOYEES.forEach(emp => {
+  EMPLOYEES.filter(isEmpSlotActive).forEach(emp => {
     const c = getEmpColor(emp.idx);
-    const on = isEmpSlotActive(emp);
-    const label = on ? formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim()) : formatEmpIdx2(emp.idx) + '.';
+    const label = formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim());
     const st = `border-color:${c.color}55;color:${c.color}`;
-    if (on) {
-      html += `<button type="button" class="rpt-jump-btn" style="${st}" onclick="void showReportTab('emp${emp.idx}')">${label}</button>`;
-    } else {
-      html += `<button type="button" class="rpt-jump-btn report-tab-muted" style="${st}" disabled title="미배정 번호">${label}</button>`;
-    }
+    html += `<button type="button" class="rpt-jump-btn" style="${st}" onclick="void showReportTab('emp${emp.idx}')">${label}</button>`;
   });
   html += `
   </div>
@@ -1682,16 +1677,13 @@ function renderOverview() {
     </tr></thead>
     <tbody>`;
 
-  // Show ALL employees - merge server data with EMPLOYEES list
-  EMPLOYEES.forEach(emp => {
+  // Show only active employees
+  EMPLOYEES.filter(isEmpSlotActive).forEach(emp => {
     const e = emps.find(x => x.empIdx === emp.idx) || { totalItems:0, doneItems:0, undoneItems:0, starItems:0, suggestions:0 };
     const r = e.totalItems>0 ? Math.round(e.doneItems/e.totalItems*100) : 0;
     const c = getEmpColor(emp.idx);
-    const on = isEmpSlotActive(emp);
-    const nameCell = on ? formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim()) : formatEmpIdx2(emp.idx) + '.';
-    const rowClick = on ? ` onclick="void showReportTab('emp${emp.idx}')"` : '';
-    const rowCls = on ? '' : ' class="rpt-stat-row-inactive"';
-    html += `<tr${rowCls}${rowClick} style="${on ? '' : 'opacity:.72;'}cursor:${on ? 'pointer' : 'default'};">
+    const nameCell = formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim());
+    html += `<tr onclick="void showReportTab('emp${emp.idx}')" style="cursor:pointer;">
       <td><b style="color:${c.color}">${nameCell}</b></td>
       <td>${e.totalItems}</td>
       <td style="color:var(--green);font-weight:bold;">${e.doneItems}</td>

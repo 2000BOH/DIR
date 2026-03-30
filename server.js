@@ -337,7 +337,9 @@ app.get('/api/weekly-stats/:startDate/:endDate', async (req, res) => {
   const suggestions = [];
 
   for (const emp of EMPLOYEES) {
-    const dispName = emp.active && emp.name ? emp.name : '';
+    if (!emp.active || !(emp.name || '').trim()) continue;
+    
+    const dispName = String(emp.name).trim();
     employees[emp.idx] = {
       empIdx: emp.idx, name: dispName, active: emp.active,
       totalItems: 0, doneItems: 0, undoneItems: 0,
@@ -358,6 +360,7 @@ app.get('/api/weekly-stats/:startDate/:endDate', async (req, res) => {
     
     for (const dateStr of allDates) {
       for (const emp of EMPLOYEES) {
+        if (!emp.active || !(emp.name || '').trim()) continue;
         const row = rows.find(r => r.emp_idx === emp.idx && r.date_str === dateStr);
         if (!row) continue;
         
