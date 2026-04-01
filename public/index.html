@@ -826,6 +826,12 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
       <select id="rptPresenter" style="padding:4px 8px; border-radius:6px; border:1px solid #ddd; font-size:13px;"></select>
       <button class="btn btn-sm btn-outline" style="margin-left:6px;" onclick="setThisWeek()">이번 주</button>
       <button class="btn btn-sm btn-primary" onclick="loadWeeklyReport()">조회</button>
+      <div style="margin-left:auto; display:flex; gap:4px;">
+        <button class="btn btn-sm btn-outline" style="border-color:#1a73e8; color:#1a73e8;" onclick="printReport('today')">오늘출력</button>
+        <button class="btn btn-sm btn-outline" style="border-color:#1a73e8; color:#1a73e8;" onclick="printReport('week')">한주출력</button>
+        <button class="btn btn-sm btn-outline" style="border-color:#e65100; color:#e65100;" onclick="printReport('all-today')">전체인원 오늘출력</button>
+        <button class="btn btn-sm btn-outline" style="border-color:#e65100; color:#e65100;" onclick="printReport('all-week')">전체인원 한 주 출력</button>
+      </div>
     </div>
     <div class="report-tabs" id="reportTabs" style="margin-top:14px;">
       <button class="report-tab active" data-rtab="overview">전체 현황</button>
@@ -1721,7 +1727,14 @@ async function showReportTab(tab) {
   syncReportPresentationIfOpen();
 }
 
+/** 헬퍼: 현재 화면 출력 모드인지 확인 */
+let isPrintingAll = false;
+
 function renderOverview() {
+  document.getElementById('reportBody').innerHTML = generateOverviewHtml();
+}
+
+function generateOverviewHtml() {
   const emps = weeklyData.employees||[];
   const nAssigned = EMPLOYEES.filter(isEmpSlotActive).length;
   const totalItems = emps.reduce((s,e)=>s+e.totalItems,0);
@@ -1731,35 +1744,42 @@ function renderOverview() {
   const totalSuggestions = emps.reduce((s,e)=>s+e.suggestions,0);
   const rate = totalItems>0 ? Math.round(totalDone/totalItems*100) : 0;
 
+  // 인쇄 모드일 때는 제목 추가
+  const printTitle = isPrintingAll ? `<div style="text-align:center; margin-bottom: 30px;"><h1>계약관리팀 주간 업무 현황 요약</h1><p>${weeklyData._start} ~ ${weeklyData._end}</p></div>` : '';
+
   let html = `
-  <div class="stat-grid">
-    <div class="stat-box"><div class="stat-num">${nAssigned}</div><div class="stat-label">배정 인원 / 슬롯 ${EMPLOYEES.length}</div></div>
-    <div class="stat-box"><div class="stat-num">${totalItems}</div><div class="stat-label">전체 업무 건수</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--green)">${totalDone}</div><div class="stat-label">완료 건수</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--red)">${totalUndone}</div><div class="stat-label">미이행 건수</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--orange)">${totalStars}</div><div class="stat-label">중요 업무 (★★★)</div></div>
-    <div class="stat-box"><div class="stat-num">${rate}%</div><div class="stat-label">전체 완료율</div></div>
-    <div class="stat-box"><div class="stat-num">${totalSuggestions}</div><div class="stat-label">건의사항 수</div></div>
-  </div>
+  <div class="pt-view">
+    ${printTitle}
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num">${nAssigned}</div><div class="stat-label">배정 인원 / 슬롯 ${EMPLOYEES.length}</div></div>
+      <div class="stat-box"><div class="stat-num">${totalItems}</div><div class="stat-label">전체 업무 건수</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--green)">${totalDone}</div><div class="stat-label">완료 건수</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--red)">${totalUndone}</div><div class="stat-label">미이행 건수</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--orange)">${totalStars}</div><div class="stat-label">중요 업무 (★★★)</div></div>
+      <div class="stat-box"><div class="stat-num">${rate}%</div><div class="stat-label">전체 완료율</div></div>
+      <div class="stat-box"><div class="stat-num">${totalSuggestions}</div><div class="stat-label">건의사항 수</div></div>
+    </div>`;
 
-  <div class="rpt-overview-jump">
-    <span class="rpt-overview-jump-label">직원 바로가기</span>`;
-  EMPLOYEES.filter(isEmpSlotActive).forEach(emp => {
-    const c = getEmpColor(emp.idx);
-    const label = formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim());
-    const st = `border-color:${c.color}55;color:${c.color}`;
-    html += `<button type="button" class="rpt-jump-btn" style="${st}" onclick="void showReportTab('emp${emp.idx}')">${label}</button>`;
-  });
+  if (!isPrintingAll) {
+    html += `
+    <div class="rpt-overview-jump">
+      <span class="rpt-overview-jump-label">직원 바로가기</span>`;
+    EMPLOYEES.filter(isEmpSlotActive).forEach(emp => {
+      const c = getEmpColor(emp.idx);
+      const label = formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim());
+      const st = `border-color:${c.color}55;color:${c.color}`;
+      html += `<button type="button" class="rpt-jump-btn" style="${st}" onclick="void showReportTab('emp${emp.idx}')">${label}</button>`;
+    });
+    html += `</div>`;
+  }
+
   html += `
-  </div>
-
   <table class="emp-stat-table">
     <thead><tr>
       <th>직원</th><th>전체</th><th>완료</th><th>미이행</th><th>완료율</th><th>진행도</th><th>중요★</th><th>건의</th>
     </tr></thead>
     <tbody>`;
 
-  // Show only active employees
   EMPLOYEES.filter(isEmpSlotActive).forEach(emp => {
     const e = emps.find(x => x.empIdx === emp.idx) || { totalItems:0, doneItems:0, undoneItems:0, starItems:0, suggestions:0 };
     const r = e.totalItems>0 ? Math.round(e.doneItems/e.totalItems*100) : 0;
@@ -1779,7 +1799,6 @@ function renderOverview() {
 
   html += `</tbody></table>`;
 
-  // Suggestions (특이사항, 건의사항, 차주계획 통합)
   if (weeklyData.suggestions?.length) {
     html += `<div class="suggestion-list"><div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">특이/건의/차주계획 수집</div></div>`;
     html += weeklyData.suggestions.map(s => {
@@ -1788,8 +1807,8 @@ function renderOverview() {
     }).join('');
     html += '</div>';
   }
-
-  document.getElementById('reportBody').innerHTML = html;
+  html += `</div>`; // pt-view end
+  return html;
 }
 
 function dedupeLogItems(items) {
@@ -1810,115 +1829,169 @@ function ptLineItem(i) {
 }
 
 async function renderEmpDetail(empIdx) {
-  const s = weeklyData._start, e = weeklyData._end;
-  const idxNum = parseInt(empIdx, 10);
   try {
-    const r = await fetch(`/api/weekly-detail/${empIdx}/${s}/${e}`);
-    const raw = await r.json();
-    // API가 에러 객체를 내려줄 경우 빈 배열로 처리
-    const days = Array.isArray(raw) ? raw : [];
-    const emp = (weeklyData.employees || []).find(x => x.empIdx === idxNum) || {};
-    const empRec = EMPLOYEES.find(x => x.idx === idxNum) || {};
-    const titleName = isEmpSlotActive(empRec)
-      ? formatEmpIdx2(idxNum) + '.' + String(empRec.name).trim()
-      : formatEmpIdx2(idxNum) + '.';
-    const rate = emp.totalItems > 0 ? Math.round(emp.doneItems / emp.totalItems * 100) : 0;
-    const c = getEmpColor(idxNum);
-
-    const allItems = [];
-    const specialAgg = { '특이사항': [], '건의사항': [], '차주계획': [], '기타': [] };
-    
-    days.forEach(day => {
-      // 일반 할 일 수집
-      ['today', 'tomorrow'].forEach(sec => {
-        (day.sections?.[sec] || []).forEach(i => {
-          if (i && String(i.content || '').trim()) allItems.push(i);
-        });
-      });
-      // 특이사항 수집
-      (day.sections?.special || []).forEach(i => {
-        if (i && String(i.content || '').trim()) {
-          const cat = ['특이사항', '건의사항', '차주계획'].includes(i.category) ? i.category : '기타';
-          specialAgg[cat].push(i);
-        }
-      });
-    });
-
-    const dedupedItems = dedupeLogItems(allItems);
-    const importantList = dedupedItems.filter(i => (parseInt(i.stars, 10) || 0) === 3);
-
-    let html = `
-    <div class="pt-view" style="border-top:4px solid ${c.color}">
-      <div class="pt-header">
-        <h2 style="color:${c.color}">${esc(titleName)} 주간 업무보고</h2>
-        <div class="pt-period">${s} ~ ${e} · 선택 기간 데이터 합산</div>
-      </div>
-      <div class="pt-stats">
-        <div class="pt-stat"><div class="ps-num">${emp.totalItems || 0}</div><div class="ps-label">전체 건수</div></div>
-        <div class="pt-stat"><div class="ps-num" style="color:var(--green)">${emp.doneItems || 0}</div><div class="ps-label">실시 건수</div></div>
-        <div class="pt-stat"><div class="ps-num" style="color:var(--red)">${emp.undoneItems || 0}</div><div class="ps-label">미실시 건수</div></div>
-        <div class="pt-stat"><div class="ps-num">${rate}%</div><div class="ps-label">완료율</div></div>
-        <div class="pt-stat"><div class="ps-num" style="color:var(--orange)">${emp.starItems || 0}</div><div class="ps-label">핵심업무★★★</div></div>
-      </div>`;
-
-    if (!isEmpSlotActive(empRec)) {
-      html += `<p style="padding:10px 12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#5d4037;margin-bottom:16px;">미배정 슬롯입니다.</p>`;
-    }
-
-    // 핵심 업무
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 보고 (★★★)</h3><div class="pt-agg-body">`;
-    if (importantList.length) {
-      html += importantList.map(i => `<div class="pt-item">• ${i.done ? '✅' : '⬜'} ${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`).join('');
-    } else {
-      html += '<p class="pt-agg-empty">해당 없음</p>';
-    }
-    html += `</div></div>`;
-
-    // 일반 실시 현황 요약 (2단 슬림 디자인)
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (요약)</h3><div class="pt-agg-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 20px;">`;
-    const catGroups = {};
-    dedupedItems.forEach(i => {
-      const cat = i.category || '기타';
-      if (!catGroups[cat]) catGroups[cat] = { done: 0, undone: 0 };
-      if (i.done) catGroups[cat].done++;
-      else catGroups[cat].undone++;
-    });
-    const sortedCats = Object.keys(catGroups).sort();
-    if (sortedCats.length) {
-      html += sortedCats.map(cat => `
-        <div style="padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;">
-          <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 3px; line-height: 1.3;">• ${esc(cat)}</div>
-          <div style="font-size: 11px; margin-left: 10px; color: #666; display: flex; gap: 8px; align-items: center;">
-            <span><b style="color:var(--green);">${catGroups[cat].done}</b> 실시</span>
-            <span style="color:#eee;">|</span>
-            <span><b style="color:var(--red);">${catGroups[cat].undone}</b> 미실시</span>
-          </div>
-        </div>
-      `).join('');
-    } else {
-      html += '<p class="pt-agg-empty" style="grid-column:1/-1;">데이터 없음</p>';
-    }
-    html += `</div></div>`;
-
-    // 특이사항 / 건의사항 / 차주계획
-    ['특이사항', '건의사항', '차주계획'].forEach(cat => {
-      html += `<div class="pt-agg-block"><h3 class="pt-agg-title">${cat}</h3><div class="pt-agg-body">`;
-      const list = specialAgg[cat];
-      if (list.length) {
-        html += list.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('');
-      } else {
-        html += '<p class="pt-agg-empty">내용 없음</p>';
-      }
-      html += `</div></div>`;
-    });
-
-    if (!days.length && !importantList.length) {
-      html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
-    }
-
-    html += '</div>';
-    document.getElementById('reportBody').innerHTML = html;
+    const s = weeklyData._start, e = weeklyData._end;
+    document.getElementById('reportBody').innerHTML = await generateEmpReportHtml(empIdx, s, e);
   } catch (e) { console.error(e); showToast('상세 로드 실패'); }
+}
+
+async function generateEmpReportHtml(empIdx, s, e) {
+  const idxNum = parseInt(empIdx, 10);
+  const r = await fetch(`/api/weekly-detail/${empIdx}/${s}/${e}`);
+  const raw = await r.json();
+  const days = Array.isArray(raw) ? raw : [];
+  const emp = (weeklyData.employees || []).find(x => x.empIdx === idxNum) || {};
+  const empRec = EMPLOYEES.find(x => x.idx === idxNum) || {};
+  const titleName = isEmpSlotActive(empRec)
+    ? formatEmpIdx2(idxNum) + '.' + String(empRec.name).trim()
+    : formatEmpIdx2(idxNum) + '.';
+  const rate = emp.totalItems > 0 ? Math.round(emp.doneItems / emp.totalItems * 100) : 0;
+  const c = getEmpColor(idxNum);
+
+  const allItems = [];
+  const specialAgg = { '특이사항': [], '건의사항': [], '차주계획': [], '기타': [] };
+  
+  days.forEach(day => {
+    ['today', 'tomorrow'].forEach(sec => {
+      (day.sections?.[sec] || []).forEach(i => {
+        if (i && String(i.content || '').trim()) allItems.push(i);
+      });
+    });
+    (day.sections?.special || []).forEach(i => {
+      if (i && String(i.content || '').trim()) {
+        const cat = ['특이사항', '건의사항', '차주계획'].includes(i.category) ? i.category : '기타';
+        specialAgg[cat].push(i);
+      }
+    });
+  });
+
+  const dedupedItems = dedupeLogItems(allItems);
+  const importantList = dedupedItems.filter(i => (parseInt(i.stars, 10) || 0) === 3);
+
+  let html = `
+  <div class="pt-view" style="border-top: ${isPrintingAll ? 'none' : `4px solid ${c.color}`}">
+    <div class="pt-header">
+      <h2 style="color:${c.color}">${esc(titleName)} 주간 업무보고</h2>
+      <div class="pt-period">${s} ~ ${e} · 데이터 합산</div>
+    </div>
+    <div class="pt-stats">
+      <div class="pt-stat"><div class="ps-num">${emp.totalItems || 0}</div><div class="ps-label">전체 건수</div></div>
+      <div class="pt-stat"><div class="ps-num" style="color:var(--green)">${emp.doneItems || 0}</div><div class="ps-label">실시 건수</div></div>
+      <div class="pt-stat"><div class="ps-num" style="color:var(--red)">${emp.undoneItems || 0}</div><div class="ps-label">미실시 건수</div></div>
+      <div class="pt-stat"><div class="ps-num">${rate}%</div><div class="ps-label">완료율</div></div>
+      <div class="pt-stat"><div class="ps-num" style="color:var(--orange)">${emp.starItems || 0}</div><div class="ps-label">핵심★★★</div></div>
+    </div>`;
+
+  if (!isEmpSlotActive(empRec)) {
+    html += `<p style="padding:10px 12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#5d4037;margin-bottom:16px;">미배정 슬롯입니다.</p>`;
+  }
+
+  // 핵심 업무
+  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 보고 (★★★)</h3><div class="pt-agg-body">`;
+  if (importantList.length) {
+    html += importantList.map(i => `<div class="pt-item">• ${i.done ? '✅' : '⬜'} ${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`).join('');
+  } else {
+    html += '<p class="pt-agg-empty">해당 없음</p>';
+  }
+  html += `</div></div>`;
+
+  // 일반 실시 현황 요약
+  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (요약)</h3><div class="pt-agg-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 20px;">`;
+  const catGroups = {};
+  dedupedItems.forEach(i => {
+    const cat = i.category || '기타';
+    if (!catGroups[cat]) catGroups[cat] = { done: 0, undone: 0 };
+    if (i.done) catGroups[cat].done++;
+    else catGroups[cat].undone++;
+  });
+  const sortedCats = Object.keys(catGroups).sort();
+  if (sortedCats.length) {
+    html += sortedCats.map(cat => `
+      <div style="padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;">
+        <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 3px; line-height: 1.3;">• ${esc(cat)}</div>
+        <div style="font-size: 11px; margin-left: 10px; color: #666; display: flex; gap: 8px; align-items: center;">
+          <span><b style="color:var(--green);">${catGroups[cat].done}</b> 실시</span>
+          <span style="color:#eee;">|</span>
+          <span><b style="color:var(--red);">${catGroups[cat].undone}</b> 미실시</span>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    html += '<p class="pt-agg-empty" style="grid-column:1/-1;">데이터 없음</p>';
+  }
+  html += `</div></div>`;
+
+  // 특이사항 / 건의사항 / 차주계획
+  ['특이사항', '건의사항', '차주계획'].forEach(cat => {
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">${cat}</h3><div class="pt-agg-body">`;
+    const list = specialAgg[cat];
+    if (list.length) {
+      html += list.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('');
+    } else {
+      html += '<p class="pt-agg-empty">내용 없음</p>';
+    }
+    html += `</div></div>`;
+  });
+
+  if (!days.length && !importantList.length) {
+    html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
+  }
+  html += '</div>';
+  return html;
+}
+
+async function printReport(mode) {
+  const sInput = document.getElementById('rptStart').value;
+  const eInput = document.getElementById('rptEnd').value;
+  if (!sInput || !eInput || !weeklyData) {
+    showToast('기간을 선택하고 조회한 뒤 사용해 주세요.');
+    return;
+  }
+
+  const today = todayStr();
+  let start = sInput, end = eInput;
+  if (mode.includes('today')) { start = today; end = today; }
+
+  const activeTab = document.querySelector('#reportTabs .report-tab.active')?.dataset.rtab || 'overview';
+  const empsToPrint = mode.includes('all') ? EMPLOYEES.filter(isEmpSlotActive) : [];
+  
+  showToast('진행 준비 중...', 5000);
+  isPrintingAll = true;
+
+  let combinedHtml = '';
+  
+  try {
+    if (mode.includes('all')) {
+      // 1. 전체 현황 먼저 추가
+      combinedHtml += generateOverviewHtml();
+      // 2. 각 직원 상세 추가
+      for (const emp of empsToPrint) {
+        combinedHtml += await generateEmpReportHtml(emp.idx, start, end);
+      }
+    } else {
+      // 개별 출력
+      if (activeTab === 'overview') {
+        combinedHtml += generateOverviewHtml();
+      } else {
+        combinedHtml += await generateEmpReportHtml(activeTab.replace('emp',''), start, end);
+      }
+    }
+
+    const oldBody = document.getElementById('reportBody').innerHTML;
+    document.getElementById('reportBody').innerHTML = combinedHtml;
+    
+    setTimeout(() => {
+      window.print();
+      document.getElementById('reportBody').innerHTML = oldBody;
+      isPrintingAll = false;
+      showToast('출력이 완료되었습니다.');
+    }, 500);
+
+  } catch (err) {
+    console.error(err);
+    showToast('출력 중 오류가 발생했습니다.');
+    isPrintingAll = false;
+  }
 }
 
 async function openReportPresentation() {
