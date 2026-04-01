@@ -775,6 +775,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
       <div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">특이 / 건의 사항</div></div>
       <table class="log-table"><thead><tr>
         <th class="col-done">완료</th>
+        <th class="col-cat">구분</th>
         <th>내용</th>
         <th class="col-star">중요도</th>
         <th class="col-del"></th>
@@ -783,9 +784,8 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
     </div>
 
     <div class="action-bar">
-      <span id="saveStatus" style="font-size:12px;color:#aaa;"></span>
+      <span id="saveStatus" style="font-size:13px;color:#1a73e8;font-weight:bold;"></span>
       <div class="spacer"></div>
-      <button class="btn btn-outline" id="saveBtn" onclick="saveNowMsg()" style="margin-right: 8px;">임시저장</button>
       <button class="btn btn-primary" id="submitBtn" onclick="submitLog()">제출하기</button>
     </div>
   </div>
@@ -822,7 +822,9 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
       <input type="date" id="rptStart">
       <span>~</span>
       <input type="date" id="rptEnd">
-      <button class="btn btn-sm btn-outline" onclick="setThisWeek()">이번 주</button>
+      <label style="margin-left:8px;"><b>발표자(주관):</b></label>
+      <select id="rptPresenter" style="padding:4px 8px; border-radius:6px; border:1px solid #ddd; font-size:13px;"></select>
+      <button class="btn btn-sm btn-outline" style="margin-left:6px;" onclick="setThisWeek()">이번 주</button>
       <button class="btn btn-sm btn-primary" onclick="loadWeeklyReport()">조회</button>
     </div>
     <div class="report-tabs" id="reportTabs" style="margin-top:14px;">
@@ -1202,6 +1204,8 @@ async function loadLog() {
 }
 
 function scheduleAutoSave() {
+  const statusEl = document.getElementById('saveStatus');
+  if (statusEl) statusEl.textContent = '입력 감지됨... (자동저장 대기중)';
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveNow, 800);
 }
@@ -1209,13 +1213,43 @@ function scheduleAutoSave() {
 async function saveNow() {
   if (!logData) return;
   collectData();
+  const statusEl = document.getElementById('saveStatus');
+  if (statusEl) statusEl.textContent = '자동저장 중...';
   try {
     await fetch(`/api/log/${curEmpIdx}/${curDate}`, {
       method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(logData)
     });
-    document.getElementById('saveStatus').textContent = '저장됨 ' + new Date().toLocaleTimeString('ko');
-  } catch { document.getElementById('saveStatus').textContent = '저장 실패'; }
+    if (statusEl) {
+      statusEl.style.color = 'var(--green)';
+      statusEl.textContent = '✓ 자동저장 완료 (' + new Date().toLocaleTimeString('ko') + ')';
+      setTimeout(() => { if (statusEl.textContent.includes('완료')) statusEl.style.color = '#1a73e8'; }, 3000);
+    }
+  } catch { 
+    if (statusEl) {
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = '자동저장 실패 (네트워크 확인)'; 
+    }
+  }
 }
+
+// 브라우저 닫기/새로고침/백그라운드 이동 시 남아있는 변경사항 즉시 저장 (모바일 환경 등 고려)
+function forceSaveData() {
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    collectData();
+    // navigator.sendBeacon을 사용하여 페이지 종료 시점에도 안정적으로 전송
+    const blob = new Blob([JSON.stringify(logData)], { type: 'application/json' });
+    navigator.sendBeacon(`/api/log/${curEmpIdx}/${curDate}`, blob);
+  }
+}
+
+window.addEventListener('beforeunload', forceSaveData);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    forceSaveData();
+  }
+});
 
 async function saveNowMsg() {
   await saveNow();
@@ -1256,8 +1290,10 @@ function rowHTML(item, sec) {
   const doneLabel = '<span class="done-label">완료</span>';
 
   if (sec === 'special') {
+    const specOptions = ['특이사항', '건의사항', '차주계획'].map(c => `<option value="${c}"${c === item.category ? ' selected' : ''}>${c}</option>`).join('');
     return `<tr data-id="${item.id||genId()}" data-stars="${item.stars||0}" class="${carriedClass}${doneClass}">
       <td class="col-done"><input type="checkbox" class="chk" ${item.done?'checked':''} onchange="toggleDone(this);scheduleAutoSave()">${doneLabel}</td>
+      <td class="col-cat"><select class="cell-cat-select" onchange="scheduleAutoSave()"><option value="">-- 구분 --</option>${specOptions}</select></td>
       <td><input class="cell-content" value="${esc(item.content||'')}" placeholder="내용 입력..." oninput="scheduleAutoSave()"></td>
       <td class="col-star"><div class="stars">${stars}</div></td>
       <td class="col-del"><button class="del-btn" onclick="this.closest('tr').remove();scheduleAutoSave()">✕</button></td>
@@ -1298,6 +1334,7 @@ function addRow(sec) {
   const tbody = document.getElementById(`tbody-${sec}`);
   const item = { id: genId(), done: false, category: '', content: '', stars: 0 };
   tbody.insertAdjacentHTML('beforeend', rowHTML(item, sec));
+  scheduleAutoSave(); // 행 추가 시에도 자동저장 트리거
 }
 
 function setStar(el, n, sec) {
@@ -1549,6 +1586,13 @@ async function loadWeeklyReport() {
     weeklyData = await r.json();
     weeklyData._start = s; weeklyData._end = e;
     renderReportTabs();
+    
+    // 발표자 옵션 세팅
+    const sel = document.getElementById('rptPresenter');
+    const curVal = sel.value;
+    sel.innerHTML = '<option value="">-- 전체 발표 --</option>' + 
+      EMPLOYEES.filter(isEmpSlotActive).map(emp => `<option value="${emp.idx}"${curVal==emp.idx?' selected':''}>${esc(emp.name)}</option>`).join('');
+      
     await showReportTab('overview');
   } catch { showToast('보고서 로드 실패'); }
 }
@@ -1574,8 +1618,13 @@ function getPresentationActiveEmpIndices() {
   return EMPLOYEES.filter(isEmpSlotActive).map(e => e.idx).sort((a, b) => a - b);
 }
 
-/** 프리젠테이션 화살표 순서: 전체 현황(1페이지) → 직원… → 다시 전체 현황 */
+/** 프리젠테이션 화살표 순서: 발표자가 지정되면 그 분의 페이지만 이동, 아니면 전체 인원 */
 function getPresentationNavTabs() {
+  const sel = document.getElementById('rptPresenter');
+  const pid = sel ? parseInt(sel.value, 10) : NaN;
+  if (!Number.isNaN(pid) && pid > 0) {
+    return ['overview', 'emp' + pid]; // 지정된 주관(발표자)만 노출
+  }
   const emps = getPresentationActiveEmpIndices();
   return ['overview', ...emps.map(i => 'emp' + i)];
 }
@@ -1730,12 +1779,13 @@ function renderOverview() {
 
   html += `</tbody></table>`;
 
-  // Suggestions
+  // Suggestions (특이사항, 건의사항, 차주계획 통합)
   if (weeklyData.suggestions?.length) {
-    html += `<div class="suggestion-list"><div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">건의사항 수집</div></div>`;
-    html += weeklyData.suggestions.map(s => `
-      <div class="suggestion-item"><span class="sug-name">${esc(s.name)}</span><span class="sug-date">${s.date}</span><span>${esc(s.content)}</span></div>
-    `).join('');
+    html += `<div class="suggestion-list"><div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">특이/건의/차주계획 수집</div></div>`;
+    html += weeklyData.suggestions.map(s => {
+      const cLabel = s.category ? `<span class="mi-cat" style="background:#fff3e0;color:#e65100;margin-right:8px;">${esc(s.category)}</span>` : '';
+      return `<div class="suggestion-item"><span class="sug-name">${esc(s.name)}</span><span class="sug-date">${s.date}</span><span>${cLabel}${esc(s.content)}</span></div>`;
+    }).join('');
     html += '</div>';
   }
 
@@ -1773,65 +1823,100 @@ async function renderEmpDetail(empIdx) {
     const rate = emp.totalItems > 0 ? Math.round(emp.doneItems / emp.totalItems * 100) : 0;
     const c = getEmpColor(idxNum);
 
-    const doneAgg = [];
-    const nextUndone = [];
-    const specialAgg = [];
+    const allItems = [];
+    const specialAgg = { '특이사항': [], '건의사항': [], '차주계회': [], '기타': [] };
+    
     days.forEach(day => {
-      (day.sections?.today || []).forEach(i => {
-        if (!i || !String(i.content || '').trim()) return;
-        if (i.done) doneAgg.push(i);
+      // 일반 할 일 수집
+      ['today', 'tomorrow'].forEach(sec => {
+        (day.sections?.[sec] || []).forEach(i => {
+          if (i && String(i.content || '').trim()) allItems.push(i);
+        });
       });
-      (day.sections?.tomorrow || []).forEach(i => {
-        if (!i || !String(i.content || '').trim()) return;
-        if (i.done) doneAgg.push(i);
-        else nextUndone.push(i);
-      });
+      // 특이사항 수집
       (day.sections?.special || []).forEach(i => {
-        if (i && String(i.content || '').trim()) specialAgg.push(i);
+        if (i && String(i.content || '').trim()) {
+          const cat = ['특이사항', '건의사항', '차주계획'].includes(i.category) ? i.category : '기타';
+          specialAgg[cat].push(i);
+        }
       });
     });
-    const doneList = dedupeLogItems(doneAgg);
-    const nextList = dedupeLogItems(nextUndone);
-    const specList = dedupeLogItems(specialAgg);
-    const importantList = emp.importantItems || [];
+
+    const dedupedItems = dedupeLogItems(allItems);
+    const importantList = dedupedItems.filter(i => (parseInt(i.stars, 10) || 0) === 3);
 
     let html = `
     <div class="pt-view" style="border-top:4px solid ${c.color}">
       <div class="pt-header">
         <h2 style="color:${c.color}">${esc(titleName)} 주간 업무보고</h2>
-        <div class="pt-period">${s} ~ ${e} · 기간 합산(날짜별 구분 없음)</div>
+        <div class="pt-period">${s} ~ ${e} · 선택 기간 데이터 합산</div>
       </div>
       <div class="pt-stats">
-        <div class="pt-stat"><div class="ps-num">${emp.totalItems || 0}</div><div class="ps-label">전체</div></div>
-        <div class="pt-stat"><div class="ps-num" style="color:var(--green)">${emp.doneItems || 0}</div><div class="ps-label">완료</div></div>
-        <div class="pt-stat"><div class="ps-num" style="color:var(--red)">${emp.undoneItems || 0}</div><div class="ps-label">미이행</div></div>
+        <div class="pt-stat"><div class="ps-num">${emp.totalItems || 0}</div><div class="ps-label">전체 건수</div></div>
+        <div class="pt-stat"><div class="ps-num" style="color:var(--green)">${emp.doneItems || 0}</div><div class="ps-label">실시 건수</div></div>
+        <div class="pt-stat"><div class="ps-num" style="color:var(--red)">${emp.undoneItems || 0}</div><div class="ps-label">미실시 건수</div></div>
         <div class="pt-stat"><div class="ps-num">${rate}%</div><div class="ps-label">완료율</div></div>
-        <div class="pt-stat"><div class="ps-num" style="color:var(--orange)">${emp.starItems || 0}</div><div class="ps-label">중요★★★</div></div>
+        <div class="pt-stat"><div class="ps-num" style="color:var(--orange)">${emp.starItems || 0}</div><div class="ps-label">핵심업무★★★</div></div>
       </div>`;
 
     if (!isEmpSlotActive(empRec)) {
-      html += `<p style="padding:10px 12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#5d4037;margin-bottom:16px;">미배정 슬롯(${formatEmpIdx2(idxNum)}.)입니다. 이 번호로 저장된 데이터는 그대로 유지됩니다. 충원 시 서버 <code>server.js</code>의 <code>EMPLOYEES</code>에서 해당 <code>idx</code>에 <code>name</code>과 <code>active:true</code>를 넣으면 작성·제출할 수 있습니다.</p>`;
+      html += `<p style="padding:10px 12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#5d4037;margin-bottom:16px;">미배정 슬롯입니다.</p>`;
     }
 
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 (★★★)</h3><div class="pt-agg-body">`;
+    // 핵심 업무
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 보고 (★★★)</h3><div class="pt-agg-body">`;
     if (importantList.length) {
-      html += importantList.map(i => `<div class="pt-item">${i.done ? '✅' : '⬜'} ${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}<span class="pi-stars">★★★</span> ${esc(i.content)} <span style="font-size:12px;padding:1px 8px;border-radius:4px;background:${i.done ? '#e8f5e9' : '#fce4ec'};color:${i.done ? '#2e7d32' : '#c62828'}">${i.done ? '완료' : '진행중'}</span></div>`).join('');
+      html += importantList.map(i => `<div class="pt-item">• ${i.done ? '✅' : '⬜'} ${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`).join('');
     } else {
       html += '<p class="pt-agg-empty">해당 없음</p>';
     }
     html += `</div></div>`;
 
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">실시 업무 (기간 내 완료)</h3><div class="pt-agg-body">`;
-    html += doneList.length ? doneList.map(ptLineItem).join('') : '<p class="pt-agg-empty">내용 없음</p>';
+    // 일반 실시 현황 요약
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (요약)</h3><div class="pt-agg-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px;">`;
+    const catGroups = {};
+    dedupedItems.forEach(i => {
+      const cat = i.category || '기타';
+      if (!catGroups[cat]) catGroups[cat] = { done: 0, undone: 0 };
+      if (i.done) catGroups[cat].done++;
+      else catGroups[cat].undone++;
+    });
+    const sortedCats = Object.keys(catGroups).sort();
+    if (sortedCats.length) {
+      html += sortedCats.map(cat => `
+        <div class="pt-item" style="justify-content: space-between; border-left: 4px solid #eee;">
+          <span class="pi-cat">${esc(cat)}</span>
+          <span>
+            <small style="color:var(--green);font-weight:bold;">실시 ${catGroups[cat].done}건</small> / 
+            <small style="color:var(--red);">미실시 ${catGroups[cat].undone}건</small>
+          </span>
+        </div>
+      `).join('');
+    } else {
+      html += '<p class="pt-agg-empty" style="grid-column:1/-1;">데이터 없음</p>';
+    }
     html += `</div></div>`;
 
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">다음주 실시 업무 (미완료 · 내일 할 일)</h3><div class="pt-agg-body">`;
-    html += nextList.length ? nextList.map(ptLineItem).join('') : '<p class="pt-agg-empty">내용 없음</p>';
-    html += `</div></div>`;
+    // 특이사항 / 건의사항 / 차주계획
+    ['특이사항', '건의사항', '차주계획'].forEach(cat => {
+      html += `<div class="pt-agg-block"><h3 class="pt-agg-title">${cat}</h3><div class="pt-agg-body">`;
+      const list = specialAgg[cat];
+      if (list.length) {
+        html += list.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('');
+      } else {
+        html += '<p class="pt-agg-empty">내용 없음</p>';
+      }
+      html += `</div></div>`;
+    });
 
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">특이·건의 사항</h3><div class="pt-agg-body">`;
-    html += specList.length ? specList.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('') : '<p class="pt-agg-empty">내용 없음</p>';
-    html += `</div></div>`;
+    if (!days.length && !importantList.length) {
+      html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
+    }
+
+    html += '</div>';
+    document.getElementById('reportBody').innerHTML = html;
+  } catch (e) { console.error(e); showToast('상세 로드 실패'); }
+}
 
     if (!days.length && !importantList.length) {
       html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
@@ -2005,10 +2090,13 @@ document.addEventListener('keydown', (ev) => {
   canvas.addEventListener('wheel', (e) => {
     const overlay = document.getElementById('reportPresOverlay');
     if (!overlay || overlay.hasAttribute('hidden')) return;
-    if (body) {
-      body.scrollTop += e.deltaY;
-      e.preventDefault();
-    }
+    
+    let dy = e.deltaY;
+    if (e.deltaMode === 1) dy *= 40; // DOM_DELTA_LINE
+    else if (e.deltaMode === 2) dy *= window.innerHeight; // DOM_DELTA_PAGE
+    
+    overlay.scrollTop += dy;
+    e.preventDefault();
   }, { passive: false });
   canvas.addEventListener('pointerdown', (e) => {
     const overlay = document.getElementById('reportPresOverlay');
@@ -2032,8 +2120,14 @@ document.addEventListener('keydown', (ev) => {
   });
 
   function forwardPresBodyWheel(ev) {
-    if (!body) return;
-    body.scrollTop += ev.deltaY;
+    const overlay = document.getElementById('reportPresOverlay');
+    if (!overlay || overlay.hasAttribute('hidden')) return;
+    
+    let dy = ev.deltaY;
+    if (ev.deltaMode === 1) dy *= 40; // DOM_DELTA_LINE
+    else if (ev.deltaMode === 2) dy *= window.innerHeight; // DOM_DELTA_PAGE
+    
+    overlay.scrollTop += dy;
     ev.preventDefault();
   }
   ['reportPresHitPrev', 'reportPresHitNext'].forEach((id) => {
