@@ -1918,15 +1918,6 @@ async function renderEmpDetail(empIdx) {
   } catch (e) { console.error(e); showToast('상세 로드 실패'); }
 }
 
-    if (!days.length && !importantList.length) {
-      html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
-    }
-
-    html += '</div>';
-    document.getElementById('reportBody').innerHTML = html;
-  } catch { showToast('상세 로드 실패'); }
-}
-
 async function openReportPresentation() {
   const s = document.getElementById('rptStart').value;
   const e = document.getElementById('rptEnd').value;
