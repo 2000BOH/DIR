@@ -1731,11 +1731,12 @@ async function showReportTab(tab) {
 let isPrintingAll = false;
 
 function renderOverview() {
-  document.getElementById('reportBody').innerHTML = generateOverviewHtml(false);
+  document.getElementById('reportBody').innerHTML = generateOverviewHtml(false, weeklyData);
 }
 
-function generateOverviewHtml(isDaily = false) {
-  const emps = weeklyData.employees||[];
+function generateOverviewHtml(isDaily = false, statsObj = null) {
+  const data = statsObj || weeklyData;
+  const emps = data.employees||[];
   const nAssigned = EMPLOYEES.filter(isEmpSlotActive).length;
   const totalItems = emps.reduce((s,e)=>s+e.totalItems,0);
   const totalDone = emps.reduce((s,e)=>s+e.doneItems,0);
@@ -1745,7 +1746,7 @@ function generateOverviewHtml(isDaily = false) {
   const rate = totalItems>0 ? Math.round(totalDone/totalItems*100) : 0;
 
   const titleType = isDaily ? '일일' : '주간';
-  const periodStr = isDaily ? weeklyData._start : `${weeklyData._start} ~ ${weeklyData._end}`;
+  const periodStr = isDaily ? data._start : `${data._start} ~ ${data._end}`;
 
   // 인쇄 모드일 때는 제목 추가
   const printTitle = isPrintingAll ? `<div style="text-align:center; margin-bottom: 30px;"><h1>계약관리팀 ${titleType} 업무 현황 요약</h1><p>${periodStr}</p></div>` : '';
@@ -1834,16 +1835,17 @@ function ptLineItem(i) {
 async function renderEmpDetail(empIdx) {
   try {
     const s = weeklyData._start, e = weeklyData._end;
-    document.getElementById('reportBody').innerHTML = await generateEmpReportHtml(empIdx, s, e, false);
+    document.getElementById('reportBody').innerHTML = await generateEmpReportHtml(empIdx, s, e, false, weeklyData);
   } catch (e) { console.error(e); showToast('상세 로드 실패'); }
 }
 
-async function generateEmpReportHtml(empIdx, s, e, isDaily = false) {
+async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = null) {
+  const data = statsObj || weeklyData;
   const idxNum = parseInt(empIdx, 10);
   const r = await fetch(`/api/weekly-detail/${empIdx}/${s}/${e}`);
   const raw = await r.json();
   const days = Array.isArray(raw) ? raw : [];
-  const emp = (weeklyData.employees || []).find(x => x.empIdx === idxNum) || {};
+  const emp = (data.employees || []).find(x => x.empIdx === idxNum) || {};
   const empRec = EMPLOYEES.find(x => x.idx === idxNum) || {};
   const titleName = isEmpSlotActive(empRec)
     ? formatEmpIdx2(idxNum) + '.' + String(empRec.name).trim()
@@ -1959,25 +1961,31 @@ async function printReport(mode) {
   let start = sInput, end = eInput;
   if (isDaily) { start = today; end = today; }
 
-  const activeTab = document.querySelector('#reportTabs .report-tab.active')?.dataset.rtab || 'overview';
-  const empsToPrint = mode.includes('all') ? EMPLOYEES.filter(isEmpSlotActive) : [];
-  
-  showToast('인쇄를 준비 중입니다...', 5000);
+  showToast('데이터를 수집하고 있습니다. 잠시만 기다려 주세요...', 5000);
   isPrintingAll = true;
 
-  let combinedHtml = '';
-  
   try {
+    // 인쇄용 임시 통계 데이터 페치 (isDaily일 경우 오늘 하루치만 가져옴)
+    const statsRes = await fetch(`/api/weekly-stats/${start}/${end}`);
+    const printStats = await statsRes.json();
+    printStats._start = start;
+    printStats._end = end;
+
+    const activeTab = document.querySelector('#reportTabs .report-tab.active')?.dataset.rtab || 'overview';
+    const empsToPrint = mode.includes('all') ? EMPLOYEES.filter(isEmpSlotActive) : [];
+    
+    let combinedHtml = '';
+    
     if (mode.includes('all')) {
-      combinedHtml += generateOverviewHtml(isDaily);
+      combinedHtml += generateOverviewHtml(isDaily, printStats);
       for (const emp of empsToPrint) {
-        combinedHtml += await generateEmpReportHtml(emp.idx, start, end, isDaily);
+        combinedHtml += await generateEmpReportHtml(emp.idx, start, end, isDaily, printStats);
       }
     } else {
       if (activeTab === 'overview') {
-        combinedHtml += generateOverviewHtml(isDaily);
+        combinedHtml += generateOverviewHtml(isDaily, printStats);
       } else {
-        combinedHtml += await generateEmpReportHtml(activeTab.replace('emp',''), start, end, isDaily);
+        combinedHtml += await generateEmpReportHtml(activeTab.replace('emp',''), start, end, isDaily, printStats);
       }
     }
 
@@ -1989,11 +1997,11 @@ async function printReport(mode) {
       document.getElementById('reportBody').innerHTML = oldBody;
       isPrintingAll = false;
       showToast('인쇄가 시작되었습니다.');
-    }, 500);
+    }, 600);
 
   } catch (err) {
     console.error(err);
-    showToast('출력 생성 중 오류가 발생했습니다.');
+    showToast('데이터 로드 중 오류가 발생했습니다.');
     isPrintingAll = false;
   }
 }
