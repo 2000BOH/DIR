@@ -301,6 +301,18 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 
 .suggestion-list { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); margin-top: 14px; }
 .suggestion-item { padding: 8px 0; border-bottom: 1px solid #f0f0f0; display: flex; gap: 10px; font-size: 14px; }
+/* ===== Printing Styles ===== */
+  @media print {
+    body { background: white !important; padding: 0 !important; margin: 0 !important; }
+    .header, .nav-tabs, .top-bar, .report-tabs, #bookmarkHint, .action-bar { display: none !important; }
+    #page-report { display: block !important; padding: 0 !important; margin: 0 !important; }
+    #reportBody { display: block !important; padding: 0 !important; }
+    .container { max-width: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    .pt-view { box-shadow: none !important; padding: 0 !important; margin: 0 0 40px 0 !important; page-break-after: always; width: 100% !important; border-top: none !important; }
+    .pt-stats { display: flex !important; flex-direction: row !important; }
+    .pt-agg-body { display: grid !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
 .suggestion-item:last-child { border-bottom: none; }
 .sug-name { font-weight: bold; min-width: 50px; }
 .sug-date { color: #888; font-size: 12px; min-width: 80px; }

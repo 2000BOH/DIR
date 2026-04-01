@@ -41,6 +41,9 @@ async function initDb() {
     if (process.env.DATABASE_URL) {
       await pool.query(query);
       console.log('Database initialized.');
+      // [임시] 테스트 데이터 삭제 (태욱, 은정, 시우)
+      await pool.query("DELETE FROM work_logs WHERE emp_idx IN (3, 7, 8)");
+      console.log('Test data (emp_idx 3, 7, 8) cleaned up.');
     } else {
         console.log('No DATABASE_URL found. Skipping DB init.');
     }
