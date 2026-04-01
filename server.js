@@ -414,7 +414,13 @@ app.get('/api/weekly-detail/:empIdx/:startDate/:endDate', async (req, res) => {
   const { empIdx, startDate, endDate } = req.params;
   const ei = parseInt(empIdx, 10);
   if (!isValidEmpIdx(ei)) return res.json([]);
-  
+
+  // DB 미연결 환경 안전 처리
+  if (!process.env.DATABASE_URL) {
+    console.warn('[weekly-detail] DATABASE_URL 환경변수가 없습니다.');
+    return res.json([]);
+  }
+
   try {
     const { rows } = await pool.query('SELECT * FROM work_logs WHERE emp_idx = $1 AND date_str >= $2 AND date_str <= $3 ORDER BY date_str ASC', [ei, startDate, endDate]);
     const days = rows.map(r => {
@@ -424,8 +430,8 @@ app.get('/api/weekly-detail/:empIdx/:startDate/:endDate', async (req, res) => {
     });
     res.json(days);
   } catch(e) {
-    console.error(e);
-    res.status(500).json([]);
+    console.error('[weekly-detail] DB 오류:', e.message);
+    res.status(500).json({ error: 'DB 오류: ' + e.message });
   }
 });
 

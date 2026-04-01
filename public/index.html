@@ -1814,7 +1814,9 @@ async function renderEmpDetail(empIdx) {
   const idxNum = parseInt(empIdx, 10);
   try {
     const r = await fetch(`/api/weekly-detail/${empIdx}/${s}/${e}`);
-    const days = await r.json();
+    const raw = await r.json();
+    // API가 에러 객체를 내려줄 경우 빈 배열로 처리
+    const days = Array.isArray(raw) ? raw : [];
     const emp = (weeklyData.employees || []).find(x => x.empIdx === idxNum) || {};
     const empRec = EMPLOYEES.find(x => x.idx === idxNum) || {};
     const titleName = isEmpSlotActive(empRec)
