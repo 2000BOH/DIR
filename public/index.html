@@ -1874,8 +1874,8 @@ async function renderEmpDetail(empIdx) {
     }
     html += `</div></div>`;
 
-    // 일반 실시 현황 요약 (슬림 디자인)
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (요약)</h3><div class="pt-agg-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 24px;">`;
+    // 일반 실시 현황 요약 (2단 슬림 디자인)
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (요약)</h3><div class="pt-agg-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 20px;">`;
     const catGroups = {};
     dedupedItems.forEach(i => {
       const cat = i.category || '기타';
@@ -1886,13 +1886,13 @@ async function renderEmpDetail(empIdx) {
     const sortedCats = Object.keys(catGroups).sort();
     if (sortedCats.length) {
       html += sortedCats.map(cat => `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f5f5f5;">
-          <span style="font-size: 13px; font-weight: 500; color: #444;">• ${esc(cat)}</span>
-          <span style="font-size: 12px; white-space: nowrap;">
-            <b style="color:var(--green);">${catGroups[cat].done}</b><span style="color:#888;margin-left:2px;">실시</span>
-            <span style="color:#eee; margin: 0 6px;">|</span>
-            <b style="color:var(--red);">${catGroups[cat].undone}</b><span style="color:#888;margin-left:2px;">미실시</span>
-          </span>
+        <div style="padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;">
+          <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 3px; line-height: 1.3;">• ${esc(cat)}</div>
+          <div style="font-size: 11px; margin-left: 10px; color: #666; display: flex; gap: 8px; align-items: center;">
+            <span><b style="color:var(--green);">${catGroups[cat].done}</b> 실시</span>
+            <span style="color:#eee;">|</span>
+            <span><b style="color:var(--red);">${catGroups[cat].undone}</b> 미실시</span>
+          </div>
         </div>
       `).join('');
     } else {
