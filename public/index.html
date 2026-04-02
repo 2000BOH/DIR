@@ -1870,7 +1870,7 @@ function getFormattedDateAndDay(dateStr) {
   const d = new Date(dateStr);
   const dayName = days[d.getDay()];
   const dd = String(d.getDate()).padStart(2, '0');
-  return dayName ? `${dd}/(${dayName})` : '';
+  return dayName ? `${dd}일(${dayName})` : '';
 }
 
 async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = null) {
@@ -1897,14 +1897,14 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
     ['today', 'tomorrow'].forEach(sec => {
       (day.sections?.[sec] || []).forEach(i => {
         if (i && String(i.content || '').trim()) {
-          allItems.push({ ...i, _date: day.date_str });
+          allItems.push({ ...i, _date: day.date });
         }
       });
     });
     (day.sections?.special || []).forEach(i => {
       if (i && String(i.content || '').trim()) {
         const cat = ['특이사항', '건의사항', '차주계획'].includes(i.category) ? i.category : '기타';
-        specialAgg[cat].push({ ...i, _date: day.date_str });
+        specialAgg[cat].push({ ...i, _date: day.date });
       }
     });
   });
