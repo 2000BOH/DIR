@@ -1864,11 +1864,13 @@ async function renderEmpDetail(empIdx) {
   } catch (e) { console.error(e); showToast('상세 로드 실패'); }
 }
 
-function getDayOfWeek(dateStr) {
+function getFormattedDateAndDay(dateStr) {
   if (!dateStr) return '';
   const days = ['일', '월', '화', '수', '목', '금', '토'];
   const d = new Date(dateStr);
-  return days[d.getDay()] ? `(${days[d.getDay()]})` : '';
+  const dayName = days[d.getDay()];
+  const dd = String(d.getDate()).padStart(2, '0');
+  return dayName ? `${dd}/(${dayName})` : '';
 }
 
 async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = null) {
@@ -1933,7 +1935,7 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
   html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 보고 (★★★)</h3><div class="pt-agg-body">`;
   if (importantList.length) {
     html += importantList.map(i => {
-      const dayStr = getDayOfWeek(i._date);
+      const dayStr = getFormattedDateAndDay(i._date);
       return `<div class="pt-item">• ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
     }).join('');
   } else {
@@ -1985,7 +1987,7 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
     html += generalList.map(i => {
       const dc = i.done ? ' pi-done' : '';
       const mark = i.done ? '✅' : '⬜';
-      const dayStr = getDayOfWeek(i._date);
+      const dayStr = getFormattedDateAndDay(i._date);
       return `<div class="pt-item${dc}">${mark} ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
     }).join('');
   } else {
