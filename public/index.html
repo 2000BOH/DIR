@@ -672,13 +672,9 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border-radius: 8px;
   border: 1px dashed #cfd6e0;
 }
-.report-pres-body .pt-scroll-box {
-  max-height: 400px;
-  overflow-y: auto;
-  border: 1px solid #e0e5ee;
-  border-radius: 8px;
-  padding: 10px;
-  background: #fff;
+.report-pres-body .pt-detailed-list {
+  border-top: 1px solid #e0e5ee;
+  padding-top: 10px;
 }
 .report-pres-body .pt-date-tag {
   font-size: calc(11px + 2pt);
@@ -1983,8 +1979,8 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
   }
   html += `</div></div>`;
 
-  // 4. 일반 업무 실시 현황 (상세) - 스크롤 박스
-  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (상세)</h3><div class="pt-scroll-box">`;
+  // 4. 일반 업무 실시 현황 (상세) - 박스 없이 전체 스크롤 가능하도록 수정
+  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (상세)</h3><div class="pt-detailed-list">`;
   if (generalList.length) {
     html += generalList.map(i => {
       const dc = i.done ? ' pi-done' : '';
