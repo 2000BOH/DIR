@@ -672,6 +672,23 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border-radius: 8px;
   border: 1px dashed #cfd6e0;
 }
+.report-pres-body .pt-scroll-box {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e0e5ee;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+}
+.report-pres-body .pt-date-tag {
+  font-size: calc(11px + 2pt);
+  color: #555;
+  background: #eef2f8;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+  font-weight: bold;
+}
 .report-pres-body .pt-view > p[style*='padding:10px'] {
   font-size: calc(13px + 2pt) !important;
   line-height: 1.5;
@@ -1851,6 +1868,13 @@ async function renderEmpDetail(empIdx) {
   } catch (e) { console.error(e); showToast('상세 로드 실패'); }
 }
 
+function getDayOfWeek(dateStr) {
+  if (!dateStr) return '';
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  const d = new Date(dateStr);
+  return days[d.getDay()] ? `(${days[d.getDay()]})` : '';
+}
+
 async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = null) {
   const data = statsObj || weeklyData;
   const idxNum = parseInt(empIdx, 10);
@@ -1874,19 +1898,22 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
   days.forEach(day => {
     ['today', 'tomorrow'].forEach(sec => {
       (day.sections?.[sec] || []).forEach(i => {
-        if (i && String(i.content || '').trim()) allItems.push(i);
+        if (i && String(i.content || '').trim()) {
+          allItems.push({ ...i, _date: day.date_str });
+        }
       });
     });
     (day.sections?.special || []).forEach(i => {
       if (i && String(i.content || '').trim()) {
         const cat = ['특이사항', '건의사항', '차주계획'].includes(i.category) ? i.category : '기타';
-        specialAgg[cat].push(i);
+        specialAgg[cat].push({ ...i, _date: day.date_str });
       }
     });
   });
 
   const dedupedItems = dedupeLogItems(allItems);
   const importantList = dedupedItems.filter(i => (parseInt(i.stars, 10) || 0) === 3);
+  const generalList = dedupedItems.filter(i => (parseInt(i.stars, 10) || 0) < 3);
 
   let html = `
   <div class="pt-view" style="border-top: ${isPrintingAll ? 'none' : `4px solid ${c.color}`}">
@@ -1906,16 +1933,31 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
     html += `<p style="padding:10px 12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#5d4037;margin-bottom:16px;">미배정 슬롯입니다.</p>`;
   }
 
-  // 핵심 업무
+  // 1. 핵심 업무 (체크박스 제거, 요일 표시)
   html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 보고 (★★★)</h3><div class="pt-agg-body">`;
   if (importantList.length) {
-    html += importantList.map(i => `<div class="pt-item">• ${i.done ? '✅' : '⬜'} ${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`).join('');
+    html += importantList.map(i => {
+      const dayStr = getDayOfWeek(i._date);
+      return `<div class="pt-item">• ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
+    }).join('');
   } else {
     html += '<p class="pt-agg-empty">해당 없음</p>';
   }
   html += `</div></div>`;
 
-  // 일반 실시 현황 요약
+  // 2. 특이사항 / 건의사항 / 차주계획
+  ['특이사항', '건의사항', '차주계획'].forEach(cat => {
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">${cat}</h3><div class="pt-agg-body">`;
+    const list = specialAgg[cat];
+    if (list.length) {
+      html += list.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('');
+    } else {
+      html += '<p class="pt-agg-empty">내용 없음</p>';
+    }
+    html += `</div></div>`;
+  });
+
+  // 3. 일반 실시 현황 요약
   html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (요약)</h3><div class="pt-agg-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 20px;">`;
   const catGroups = {};
   dedupedItems.forEach(i => {
@@ -1941,17 +1983,19 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
   }
   html += `</div></div>`;
 
-  // 특이사항 / 건의사항 / 차주계획
-  ['특이사항', '건의사항', '차주계획'].forEach(cat => {
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">${cat}</h3><div class="pt-agg-body">`;
-    const list = specialAgg[cat];
-    if (list.length) {
-      html += list.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('');
-    } else {
-      html += '<p class="pt-agg-empty">내용 없음</p>';
-    }
-    html += `</div></div>`;
-  });
+  // 4. 일반 업무 실시 현황 (상세) - 스크롤 박스
+  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (상세)</h3><div class="pt-scroll-box">`;
+  if (generalList.length) {
+    html += generalList.map(i => {
+      const dc = i.done ? ' pi-done' : '';
+      const mark = i.done ? '✅' : '⬜';
+      const dayStr = getDayOfWeek(i._date);
+      return `<div class="pt-item${dc}">${mark} ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
+    }).join('');
+  } else {
+    html += '<p class="pt-agg-empty">상세 내역 없음</p>';
+  }
+  html += `</div></div>`;
 
   if (!days.length && !importantList.length) {
     html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
