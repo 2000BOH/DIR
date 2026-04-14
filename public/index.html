@@ -1042,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderEmpButtons();
   applyEmpTheme(curEmpIdx);
   document.getElementById('currentDate').value = curDate;
-  document.getElementById('currentDate').addEventListener('change', e => { curDate = e.target.value; loadLog(); });
+  document.getElementById('currentDate').addEventListener('change', e => { saveAndClearTimer(); curDate = e.target.value; loadLog(); });
   document.getElementById('adminDate').value = curDate;
   document.querySelectorAll('.nav-tab').forEach(t => t.addEventListener('click', () => showPage(t.dataset.page)));
   setThisWeek();
@@ -1211,7 +1211,7 @@ function switchEmployee(idx) {
   const emp = EMPLOYEES.find(x => x.idx === idx);
   if (!emp || !isEmpSlotActive(emp)) return;
   if (idx === curEmpIdx) return;
-  saveNow();
+  saveAndClearTimer();
   curEmpIdx = idx;
   renderEmpButtons();
   applyEmpTheme(idx);
@@ -1240,15 +1240,25 @@ function scheduleAutoSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveNow, 800);
 }
+function saveAndClearTimer() {
+  if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+  saveNow();
+}
 
 async function saveNow() {
   if (!logData) return;
   collectData();
   const statusEl = document.getElementById('saveStatus');
   if (statusEl) statusEl.textContent = '자동저장 중...';
+  
+  // 현재 값을 캡처하여, 비동기 전송 중 다른 사람/날짜 탭으로 이동해도 올바른 대상에게 저장되도록 강제
+  const empIdx = curEmpIdx;
+  const dt = curDate;
+  const payload = JSON.stringify(logData);
+
   try {
-    await fetch(`/api/log/${curEmpIdx}/${curDate}`, {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(logData)
+    await fetch(`/api/log/${empIdx}/${dt}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: payload
     });
     if (statusEl) {
       statusEl.style.color = 'var(--green)';
@@ -1397,12 +1407,12 @@ async function submitLog() {
   } catch { showToast('제출 실패'); }
 }
 
-function goToday() { curDate=todayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
-function goYesterday() { curDate=yesterdayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
+function goToday() { saveAndClearTimer(); curDate=todayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
+function goYesterday() { saveAndClearTimer(); curDate=yesterdayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
 
 // ============ PAGE NAV ============
 function showPage(p) {
-  saveNow();
+  saveAndClearTimer();
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById(`page-${p}`).classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === p));
