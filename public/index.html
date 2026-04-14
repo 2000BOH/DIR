@@ -58,14 +58,14 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
   display: flex;
   gap: 5px;
   flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,.45) transparent;
-  padding-bottom: 2px;
+  padding: 0 4px 2px;
 }
 .employee-bar::-webkit-scrollbar { height: 4px; }
 .employee-bar::-webkit-scrollbar-thumb {
@@ -73,11 +73,11 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
   border-radius: 4px;
 }
 .emp-btn {
-  padding: 7px 14px;
+  padding: 5px 12px;
   border-radius: 8px;
   border: 2px solid rgba(255,255,255,.25);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   background: rgba(255,255,255,.08);
   color: white;
   transition: all .2s;
@@ -1122,9 +1122,8 @@ function getEmpDisplayLabel(idx) {
 }
 
 function getEmpBarLabel(emp) {
-  const prefix = formatEmpIdx2(emp.idx) + '.';
-  if (isEmpSlotActive(emp)) return prefix + String(emp.name).trim();
-  return prefix;
+  if (isEmpSlotActive(emp)) return String(emp.name).trim();
+  return formatEmpIdx2(emp.idx) + '.';
 }
 
 function showToast(msg) {
