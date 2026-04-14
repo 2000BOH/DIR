@@ -58,8 +58,8 @@ const EMPLOYEES = [
   { idx: 4, name: '', active: false },
   { idx: 5, name: '허아름 대리', active: true },
   { idx: 6, name: '김동훈 대리', active: true },
-  { idx: 7, name: '한은정 주임', active: true },
-  { idx: 8, name: '홍시우 주임', active: true },
+  { idx: 7, name: '', active: false },
+  { idx: 8, name: '', active: false },
   { idx: 9, name: '', active: false },
   { idx: 10, name: '', active: false },
 ];
