@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8,8 +8,8 @@
 <meta name="apple-mobile-web-app-title" content="업무일지">
 <title>계약관리팀 업무일지</title>
 <link rel="manifest" href="/manifest.json">
-<link rel="icon" type="image/png" href="/app-icon.png">
-<link rel="apple-touch-icon" href="/app-icon.png">
+<link rel="icon" type="image/svg+xml" href="/icon.svg" sizes="any">
+<link rel="apple-touch-icon" href="/icon.svg">
 <style>
 :root {
   --blue: #1a73e8; --blue-dark: #0d47a1; --green: #34a853; --red: #ea4335; --orange: #f9a825; --bg: #f0f2f5;
@@ -58,14 +58,14 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
   display: flex;
   gap: 5px;
   flex-wrap: nowrap;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,.45) transparent;
-  padding: 0 4px 2px;
+  padding-bottom: 2px;
 }
 .employee-bar::-webkit-scrollbar { height: 4px; }
 .employee-bar::-webkit-scrollbar-thumb {
@@ -73,11 +73,11 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
   border-radius: 4px;
 }
 .emp-btn {
-  padding: 5px 12px;
+  padding: 7px 14px;
   border-radius: 8px;
   border: 2px solid rgba(255,255,255,.25);
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   background: rgba(255,255,255,.08);
   color: white;
   transition: all .2s;
@@ -301,18 +301,6 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 
 .suggestion-list { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); margin-top: 14px; }
 .suggestion-item { padding: 8px 0; border-bottom: 1px solid #f0f0f0; display: flex; gap: 10px; font-size: 14px; }
-/* ===== Printing Styles ===== */
-  @media print {
-    body { background: white !important; padding: 0 !important; margin: 0 !important; }
-    .header, .nav-tabs, .top-bar, .report-tabs, #bookmarkHint, .action-bar { display: none !important; }
-    #page-report { display: block !important; padding: 0 !important; margin: 0 !important; }
-    #reportBody { display: block !important; padding: 0 !important; }
-    .container { max-width: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
-    .pt-view { box-shadow: none !important; padding: 0 !important; margin: 0 0 40px 0 !important; page-break-after: always; width: 100% !important; border-top: none !important; }
-    .pt-stats { display: flex !important; flex-direction: row !important; }
-    .pt-agg-body { display: grid !important; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  }
 .suggestion-item:last-child { border-bottom: none; }
 .sug-name { font-weight: bold; min-width: 50px; }
 .sug-date { color: #888; font-size: 12px; min-width: 80px; }
@@ -518,7 +506,9 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
 
 /* 프리젠테이션 전용: 글자 약 2~3pt↑ · 항목·구역 구분 강화 */
 .report-pres-body .rpt-overview-jump {
-  display: none; /* 프리젠테이션 시 직원 바로가기 숨김 */
+  gap: 10px;
+  padding: 14px 18px;
+  border: 1px solid #e4e8ef;
 }
 .report-pres-body .rpt-overview-jump-label {
   font-size: calc(13px + 2pt);
@@ -672,19 +662,6 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border-radius: 8px;
   border: 1px dashed #cfd6e0;
 }
-.report-pres-body .pt-detailed-list {
-  border-top: 1px solid #e0e5ee;
-  padding-top: 10px;
-}
-.report-pres-body .pt-date-tag {
-  font-size: calc(11px + 2pt);
-  color: #555;
-  background: #eef2f8;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-right: 8px;
-  font-weight: bold;
-}
 .report-pres-body .pt-view > p[style*='padding:10px'] {
   font-size: calc(13px + 2pt) !important;
   line-height: 1.5;
@@ -797,10 +774,9 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
 
     <!-- Special -->
     <div class="section" id="sec-special">
-      <div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">특이/건의/차주계획</div></div>
+      <div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">특이 / 건의 사항</div></div>
       <table class="log-table"><thead><tr>
         <th class="col-done">완료</th>
-        <th class="col-cat">구분</th>
         <th>내용</th>
         <th class="col-star">중요도</th>
         <th class="col-del"></th>
@@ -809,7 +785,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
     </div>
 
     <div class="action-bar">
-      <span id="saveStatus" style="font-size:13px;color:#1a73e8;font-weight:bold;"></span>
+      <span id="saveStatus" style="font-size:12px;color:#aaa;"></span>
       <div class="spacer"></div>
       <button class="btn btn-primary" id="submitBtn" onclick="submitLog()">제출하기</button>
     </div>
@@ -847,16 +823,8 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
       <input type="date" id="rptStart">
       <span>~</span>
       <input type="date" id="rptEnd">
-      <label style="margin-left:8px;"><b>발표자(주관):</b></label>
-      <select id="rptPresenter" style="padding:4px 8px; border-radius:6px; border:1px solid #ddd; font-size:13px;"></select>
-      <button class="btn btn-sm btn-outline" style="margin-left:6px;" onclick="setThisWeek()">이번 주</button>
+      <button class="btn btn-sm btn-outline" onclick="setThisWeek()">이번 주</button>
       <button class="btn btn-sm btn-primary" onclick="loadWeeklyReport()">조회</button>
-      <div style="margin-left:auto; display:flex; gap:4px;">
-        <button class="btn btn-sm btn-outline" style="border-color:#1a73e8; color:#1a73e8;" onclick="printReport('today')">일일업무 출력</button>
-        <button class="btn btn-sm btn-outline" style="border-color:#1a73e8; color:#1a73e8;" onclick="printReport('week')">주간업무 출력</button>
-        <button class="btn btn-sm btn-outline" style="border-color:#e65100; color:#e65100;" onclick="printReport('all-today')">전체인원 일일 출력</button>
-        <button class="btn btn-sm btn-outline" style="border-color:#e65100; color:#e65100;" onclick="printReport('all-week')">전체인원 주간 출력</button>
-      </div>
     </div>
     <div class="report-tabs" id="reportTabs" style="margin-top:14px;">
       <button class="report-tab active" data-rtab="overview">전체 현황</button>
@@ -956,14 +924,14 @@ let presLastY = 0;
 
 // ============ INIT ============
 const FALLBACK_EMPLOYEES = [
-  { idx: 1, name: '양남식 차장', active: true },
-  { idx: 2, name: '이수용 차장', active: true },
-  { idx: 3, name: '이태욱 과장', active: true },
-  { idx: 4, name: '', active: false },
-  { idx: 5, name: '허아름 대리', active: true },
-  { idx: 6, name: '김동훈 대리', active: true },
-  { idx: 7, name: '', active: false },
-  { idx: 8, name: '', active: false },
+  { idx: 1, name: '남식', active: true },
+  { idx: 2, name: '수용', active: true },
+  { idx: 3, name: '', active: false },
+  { idx: 4, name: '은정', active: true },
+  { idx: 5, name: '아름', active: true },
+  { idx: 6, name: '동훈', active: true },
+  { idx: 7, name: '시우', active: true },
+  { idx: 8, name: '현석', active: true },
   { idx: 9, name: '', active: false },
   { idx: 10, name: '', active: false },
 ];
@@ -1042,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderEmpButtons();
   applyEmpTheme(curEmpIdx);
   document.getElementById('currentDate').value = curDate;
-  document.getElementById('currentDate').addEventListener('change', async e => { await saveAndClearTimer(); curDate = e.target.value; loadLog(); });
+  document.getElementById('currentDate').addEventListener('change', e => { curDate = e.target.value; loadLog(); });
   document.getElementById('adminDate').value = curDate;
   document.querySelectorAll('.nav-tab').forEach(t => t.addEventListener('click', () => showPage(t.dataset.page)));
   setThisWeek();
@@ -1122,8 +1090,9 @@ function getEmpDisplayLabel(idx) {
 }
 
 function getEmpBarLabel(emp) {
-  if (isEmpSlotActive(emp)) return String(emp.name).trim();
-  return formatEmpIdx2(emp.idx) + '.';
+  const prefix = formatEmpIdx2(emp.idx) + '.';
+  if (isEmpSlotActive(emp)) return prefix + String(emp.name).trim();
+  return prefix;
 }
 
 function showToast(msg) {
@@ -1140,14 +1109,17 @@ function dismissBookmarkHint() {
 
 function initBookmarkHintBar() {
   if (location.protocol === 'file:') return;
-  // try {
-  //   if (localStorage.getItem('bookmarkHintDismissed') === '1') return;
-  // } catch (_) {}
+  try {
+    if (localStorage.getItem('bookmarkHintDismissed') === '1') return;
+  } catch (_) {}
   const bar = document.getElementById('bookmarkHint');
   const textEl = document.getElementById('bookmarkHintText');
   if (!bar || !textEl) return;
   const o = location.origin;
-  textEl.innerHTML = `✅ <strong>완료된 업무는 완료체크</strong>, ⭐⭐⭐ <strong>중요도 별세개는 주간보고서에 올라갑니다.</strong>`;
+  textEl.innerHTML =
+    `이 주소 <strong>${esc(o)}</strong> 를 크롬 <strong>즐겨찾기(Ctrl+D)</strong>에 추가해 두면 매번 파일을 열 필요가 없습니다. ` +
+    `다른 PC에서도 같은 주소로 접속할 수 있습니다. (공유용 서버 PC에서는 <code>start-web-share.bat</code> 실행) ` +
+    `주소창 오른쪽에 <strong>설치</strong> 또는 <strong>앱 설치</strong>가 보이면 창 없이 쓰는 앱처럼 고정할 수 있습니다.`;
   bar.hidden = false;
 }
 
@@ -1160,163 +1132,63 @@ function updateWatermark() {
 }
 
 // ============ EMPLOYEE BUTTONS ============
-let adminEmpFilter = null;
-
-function toggleAdminEmpFilter(idx) {
-  if (adminEmpFilter === idx) adminEmpFilter = null;
-  else adminEmpFilter = idx;
-  renderEmpButtons();
-  if (document.getElementById('page-admin').classList.contains('active')) {
-    renderAdminCardsGrid();
-  }
-}
-
 function renderEmpButtons() {
-  const pageReport = document.getElementById('page-report');
-  const isReport = pageReport && pageReport.classList.contains('active');
-  if (isReport) {
-    document.getElementById('employeeBar').innerHTML = '';
-    return;
-  }
-
-  const pageAdmin = document.getElementById('page-admin');
-  const isAdmin = pageAdmin && pageAdmin.classList.contains('active');
-
   document.getElementById('employeeBar').innerHTML = EMPLOYEES.map(emp => {
     const c = getEmpColor(emp.idx);
+    const isActive = emp.idx === curEmpIdx;
     const on = isEmpSlotActive(emp);
-    
-    let isActive = false;
-    let clickCtx = '';
-    
-    if (isAdmin) {
-      isActive = (adminEmpFilter === emp.idx);
-      clickCtx = on ? `onclick="toggleAdminEmpFilter(${emp.idx})"` : `disabled title="미배정 번호"`;
-    } else {
-      isActive = (emp.idx === curEmpIdx);
-      clickCtx = on ? `onclick="switchEmployee(${emp.idx})"` : `disabled title="미배정 번호"`;
-    }
-    
     const style = isActive
       ? `background:${c.color};color:white;border-color:${c.color};`
       : '';
     const cls = `emp-btn ${isActive ? 'active' : ''}${!on ? ' emp-btn-disabled' : ''}`;
-    
-    return `<button type="button" class="${cls}" style="${style}" ${clickCtx}>${esc(getEmpBarLabel(emp))}</button>`;
+    const attrs = on
+      ? `onclick="switchEmployee(${emp.idx})"`
+      : `disabled title="미배정 번호"`;
+    return `<button type="button" class="${cls}" style="${style}" ${attrs}>${esc(getEmpBarLabel(emp))}</button>`;
   }).join('');
 }
 
-// 로드 요청의 "세대" — 새 로드가 시작되면 증가하여, 지연 도착한 이전 응답이 현재 상태를 덮어쓰지 않도록 방지
-let loadGeneration = 0;
-// 로딩 중 자동저장 방지 플래그
-let isLoadingLog = false;
-
-async function switchEmployee(idx) {
+function switchEmployee(idx) {
   const emp = EMPLOYEES.find(x => x.idx === idx);
   if (!emp || !isEmpSlotActive(emp)) return;
   if (idx === curEmpIdx) return;
-  // 기존 자동저장 타이머 정리 + 현재 직원 데이터를 확실히 저장 (await로 완료 보장)
-  if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
-  await saveNow();
+  saveNow();
   curEmpIdx = idx;
   renderEmpButtons();
   applyEmpTheme(idx);
-  await loadLog();
+  loadLog();
 }
 
 // ============ LOAD / SAVE ============
 async function loadLog() {
   updateWatermark();
-  // 로드 세대를 증가 — 이전 요청의 응답이 도착해도 무시하도록
-  const thisGen = ++loadGeneration;
-  isLoadingLog = true;
   try {
     const r = await fetch(`/api/log/${curEmpIdx}/${curDate}?_=${Date.now()}`, { cache: 'no-store' });
-    // 응답이 도착했을 때, 이미 다른 직원/날짜로 전환되었으면 무시
-    if (thisGen !== loadGeneration) return;
     if (!r.ok) throw new Error('log http ' + r.status);
     const raw = await r.json();
-    if (thisGen !== loadGeneration) return;
     logData = normalizeLogData(raw);
     renderAll();
   } catch {
-    if (thisGen !== loadGeneration) return;
     showToast('서버에 연결되지 않았거나 로드에 실패했습니다. 저장은 되지 않을 수 있습니다.');
     logData = defaultLogData();
     renderAll();
-  } finally {
-    if (thisGen === loadGeneration) isLoadingLog = false;
   }
 }
 
 function scheduleAutoSave() {
-  // 로딩 중에는 자동저장 트리거 방지 (로드 직후 addRow로 인한 잘못된 저장 차단)
-  if (isLoadingLog) return;
-  const statusEl = document.getElementById('saveStatus');
-  if (statusEl) statusEl.textContent = '입력 감지됨... (자동저장 대기중)';
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveNow, 800);
-}
-async function saveAndClearTimer() {
-  if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
-  await saveNow();
 }
 
 async function saveNow() {
   if (!logData) return;
-  // 로딩 중에는 저장 방지 — DOM 내용이 이전 직원 데이터일 수 있음
-  if (isLoadingLog) return;
   collectData();
-  const statusEl = document.getElementById('saveStatus');
-  if (statusEl) statusEl.textContent = '자동저장 중...';
-  
-  // 현재 값을 캡처하여, 비동기 전송 중 다른 사람/날짜 탭으로 이동해도 올바른 대상에게 저장되도록 강제
-  const empIdx = curEmpIdx;
-  const dt = curDate;
-  const payload = JSON.stringify(logData);
-
   try {
-    await fetch(`/api/log/${empIdx}/${dt}`, {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: payload
+    await fetch(`/api/log/${curEmpIdx}/${curDate}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(logData)
     });
-    // 저장 완료 후에도 직원/날짜가 바뀌었으면 상태 표시를 건너뜀
-    if (empIdx !== curEmpIdx || dt !== curDate) return;
-    if (statusEl) {
-      statusEl.style.color = 'var(--green)';
-      statusEl.textContent = '✓ 자동저장 완료 (' + new Date().toLocaleTimeString('ko') + ')';
-      setTimeout(() => { if (statusEl.textContent.includes('완료')) statusEl.style.color = '#1a73e8'; }, 3000);
-    }
-  } catch { 
-    if (empIdx !== curEmpIdx || dt !== curDate) return;
-    if (statusEl) {
-      statusEl.style.color = 'var(--red)';
-      statusEl.textContent = '자동저장 실패 (네트워크 확인)'; 
-    }
-  }
-}
-
-// 브라우저 닫기/새로고침/백그라운드 이동 시 남아있는 변경사항 즉시 저장 (모바일 환경 등 고려)
-function forceSaveData() {
-  if (saveTimer && !isLoadingLog) {
-    clearTimeout(saveTimer);
-    saveTimer = null;
-    collectData();
-    // navigator.sendBeacon을 사용하여 페이지 종료 시점에도 안정적으로 전송
-    const blob = new Blob([JSON.stringify(logData)], { type: 'application/json' });
-    navigator.sendBeacon(`/api/log/${curEmpIdx}/${curDate}`, blob);
-  }
-}
-
-window.addEventListener('beforeunload', forceSaveData);
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    forceSaveData();
-  }
-});
-
-async function saveNowMsg() {
-  await saveNow();
-  showToast('임시저장 되었습니다.');
+    document.getElementById('saveStatus').textContent = '저장됨 ' + new Date().toLocaleTimeString('ko');
+  } catch { document.getElementById('saveStatus').textContent = '저장 실패'; }
 }
 
 function collectData() {
@@ -1353,10 +1225,8 @@ function rowHTML(item, sec) {
   const doneLabel = '<span class="done-label">완료</span>';
 
   if (sec === 'special') {
-    const specOptions = ['특이사항', '건의사항', '차주계획'].map(c => `<option value="${c}"${c === item.category ? ' selected' : ''}>${c}</option>`).join('');
     return `<tr data-id="${item.id||genId()}" data-stars="${item.stars||0}" class="${carriedClass}${doneClass}">
       <td class="col-done"><input type="checkbox" class="chk" ${item.done?'checked':''} onchange="toggleDone(this);scheduleAutoSave()">${doneLabel}</td>
-      <td class="col-cat"><select class="cell-cat-select" onchange="scheduleAutoSave()"><option value="">-- 구분 --</option>${specOptions}</select></td>
       <td><input class="cell-content" value="${esc(item.content||'')}" placeholder="내용 입력..." oninput="scheduleAutoSave()"></td>
       <td class="col-star"><div class="stars">${stars}</div></td>
       <td class="col-del"><button class="del-btn" onclick="this.closest('tr').remove();scheduleAutoSave()">✕</button></td>
@@ -1397,7 +1267,6 @@ function addRow(sec) {
   const tbody = document.getElementById(`tbody-${sec}`);
   const item = { id: genId(), done: false, category: '', content: '', stars: 0 };
   tbody.insertAdjacentHTML('beforeend', rowHTML(item, sec));
-  scheduleAutoSave(); // 행 추가 시에도 자동저장 트리거
 }
 
 function setStar(el, n, sec) {
@@ -1429,17 +1298,16 @@ async function submitLog() {
   } catch { showToast('제출 실패'); }
 }
 
-async function goToday() { await saveAndClearTimer(); curDate=todayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
-async function goYesterday() { await saveAndClearTimer(); curDate=yesterdayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
+function goToday() { curDate=todayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
+function goYesterday() { curDate=yesterdayStr(); document.getElementById('currentDate').value=curDate; loadLog(); }
 
 // ============ PAGE NAV ============
-async function showPage(p) {
-  await saveAndClearTimer();
+function showPage(p) {
+  saveNow();
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.getElementById(`page-${p}`).classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === p));
   document.getElementById('watermarkWrap').style.display = p==='write' ? '' : 'none';
-  renderEmpButtons();
   if (p==='admin') loadAdminCards();
   if (p==='report') loadWeeklyReport();
 }
@@ -1467,12 +1335,10 @@ function getAdminCardFilter() {
 
 function setAdminCardFilter(mode) {
   if (!['all', 'pending', 'confirmed'].includes(mode)) mode = 'all';
-  if (mode === 'all') adminEmpFilter = null;
   localStorage.setItem('adminCardFilter', mode);
   document.querySelectorAll('#adminFilterBtns .admin-filter-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.filter === mode);
   });
-  renderEmpButtons();
   renderAdminCardsGrid();
 }
 
@@ -1491,8 +1357,6 @@ function renderAdminCardsGrid() {
   let cards = all.slice();
   if (filter === 'pending') cards = cards.filter(c => !c.adminConfirmed);
   else if (filter === 'confirmed') cards = cards.filter(c => c.adminConfirmed);
-  
-  if (adminEmpFilter !== null) cards = cards.filter(c => c.empIdx === adminEmpFilter);
 
   const nPending = all.filter(c => !c.adminConfirmed).length;
   const nConfirmed = all.filter(c => c.adminConfirmed).length;
@@ -1532,8 +1396,7 @@ function renderAdminCardsGrid() {
       : '<span class="badge badge-submitted">제출</span>';
     const confirmBtn = c.adminConfirmed
       ? `<button type="button" class="btn btn-sm btn-outline" data-admin-toggle data-emp-idx="${c.empIdx}" title="클릭하면 확인 취소">확인 취소</button>`
-      : `<button type="button" class="btn btn-sm btn-green" style="margin-right:4px;" data-admin-toggle data-emp-idx="${c.empIdx}">확인</button>
-         <button type="button" class="btn btn-sm btn-outline" style="color:var(--red);border-color:var(--red);" onclick="rejectLog(${c.empIdx}, '${c.date}')" title="보고자에게 다시 작성하도록 반송합니다">반송</button>`;
+      : `<button type="button" class="btn btn-sm btn-green" data-admin-toggle data-emp-idx="${c.empIdx}">확인</button>`;
 
     const confirmedClass = c.adminConfirmed ? ' admin-card-confirmed' : '';
     return `<div class="admin-card${confirmedClass}" style="border-top-color:${empColor.color}">
@@ -1616,21 +1479,6 @@ async function toggleAdminConfirm(empIdx) {
   }
 }
 
-async function rejectLog(empIdx, date) {
-  if (!confirm('업무일지를 반송 처리하시겠습니까? (작성자에게 미제출 상태로 되돌아갑니다)')) return;
-  try {
-    const r = await fetch(`/api/reject/${empIdx}/${date}`, { method: 'POST' });
-    if (r.ok) {
-      showToast('반송 처리 되었습니다.');
-      await loadAdminCards();
-    } else {
-      showToast('반송 처리에 실패했습니다.');
-    }
-  } catch {
-    showToast('네트워크 오류');
-  }
-}
-
 // ============ WEEKLY REPORT ============
 function setThisWeek() {
   const t = new Date(); const d = t.getDay();
@@ -1649,13 +1497,6 @@ async function loadWeeklyReport() {
     weeklyData = await r.json();
     weeklyData._start = s; weeklyData._end = e;
     renderReportTabs();
-    
-    // 발표자 옵션 세팅
-    const sel = document.getElementById('rptPresenter');
-    const curVal = sel.value;
-    sel.innerHTML = '<option value="">-- 전체 발표 --</option>' + 
-      EMPLOYEES.filter(isEmpSlotActive).map(emp => `<option value="${emp.idx}"${curVal==emp.idx?' selected':''}>${esc(emp.name)}</option>`).join('');
-      
     await showReportTab('overview');
   } catch { showToast('보고서 로드 실패'); }
 }
@@ -1681,13 +1522,8 @@ function getPresentationActiveEmpIndices() {
   return EMPLOYEES.filter(isEmpSlotActive).map(e => e.idx).sort((a, b) => a - b);
 }
 
-/** 프리젠테이션 화살표 순서: 발표자가 지정되면 그 분의 페이지만 이동, 아니면 전체 인원 */
+/** 프리젠테이션 화살표 순서: 전체 현황(1페이지) → 직원… → 다시 전체 현황 */
 function getPresentationNavTabs() {
-  const sel = document.getElementById('rptPresenter');
-  const pid = sel ? parseInt(sel.value, 10) : NaN;
-  if (!Number.isNaN(pid) && pid > 0) {
-    return ['overview', 'emp' + pid]; // 지정된 주관(발표자)만 노출
-  }
   const emps = getPresentationActiveEmpIndices();
   return ['overview', ...emps.map(i => 'emp' + i)];
 }
@@ -1784,16 +1620,8 @@ async function showReportTab(tab) {
   syncReportPresentationIfOpen();
 }
 
-/** 헬퍼: 현재 화면 출력 모드인지 확인 */
-let isPrintingAll = false;
-
 function renderOverview() {
-  document.getElementById('reportBody').innerHTML = generateOverviewHtml(false, weeklyData);
-}
-
-function generateOverviewHtml(isDaily = false, statsObj = null) {
-  const data = statsObj || weeklyData;
-  const emps = data.employees||[];
+  const emps = weeklyData.employees||[];
   const nAssigned = EMPLOYEES.filter(isEmpSlotActive).length;
   const totalItems = emps.reduce((s,e)=>s+e.totalItems,0);
   const totalDone = emps.reduce((s,e)=>s+e.doneItems,0);
@@ -1802,51 +1630,49 @@ function generateOverviewHtml(isDaily = false, statsObj = null) {
   const totalSuggestions = emps.reduce((s,e)=>s+e.suggestions,0);
   const rate = totalItems>0 ? Math.round(totalDone/totalItems*100) : 0;
 
-  const titleType = isDaily ? '일일' : '주간';
-  const periodStr = isDaily ? data._start : `${data._start} ~ ${data._end}`;
-
-  // 인쇄 모드일 때는 제목 추가
-  const printTitle = isPrintingAll ? `<div style="text-align:center; margin-bottom: 30px;"><h1>계약관리팀 ${titleType} 업무 현황 요약</h1><p>${periodStr}</p></div>` : '';
-
   let html = `
-  <div class="pt-view">
-    ${printTitle}
-    <div class="stat-grid">
-      <div class="stat-box"><div class="stat-num">${nAssigned}</div><div class="stat-label">배정 인원 / 슬롯 ${EMPLOYEES.length}</div></div>
-      <div class="stat-box"><div class="stat-num">${totalItems}</div><div class="stat-label">전체 업무 건수</div></div>
-      <div class="stat-box"><div class="stat-num" style="color:var(--green)">${totalDone}</div><div class="stat-label">완료 건수</div></div>
-      <div class="stat-box"><div class="stat-num" style="color:var(--red)">${totalUndone}</div><div class="stat-label">미이행 건수</div></div>
-      <div class="stat-box"><div class="stat-num" style="color:var(--orange)">${totalStars}</div><div class="stat-label">중요 업무 (★★★)</div></div>
-      <div class="stat-box"><div class="stat-num">${rate}%</div><div class="stat-label">전체 완료율</div></div>
-      <div class="stat-box"><div class="stat-num">${totalSuggestions}</div><div class="stat-label">건의사항 수</div></div>
-    </div>`;
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-num">${nAssigned}</div><div class="stat-label">배정 인원 / 슬롯 ${EMPLOYEES.length}</div></div>
+    <div class="stat-box"><div class="stat-num">${totalItems}</div><div class="stat-label">전체 업무 건수</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--green)">${totalDone}</div><div class="stat-label">완료 건수</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--red)">${totalUndone}</div><div class="stat-label">미이행 건수</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--orange)">${totalStars}</div><div class="stat-label">중요 업무 (★★★)</div></div>
+    <div class="stat-box"><div class="stat-num">${rate}%</div><div class="stat-label">전체 완료율</div></div>
+    <div class="stat-box"><div class="stat-num">${totalSuggestions}</div><div class="stat-label">건의사항 수</div></div>
+  </div>
 
-  if (!isPrintingAll) {
-    html += `
-    <div class="rpt-overview-jump">
-      <span class="rpt-overview-jump-label">직원 바로가기</span>`;
-    EMPLOYEES.filter(isEmpSlotActive).forEach(emp => {
-      const c = getEmpColor(emp.idx);
-      const label = formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim());
-      const st = `border-color:${c.color}55;color:${c.color}`;
+  <div class="rpt-overview-jump">
+    <span class="rpt-overview-jump-label">직원 바로가기</span>`;
+  EMPLOYEES.forEach(emp => {
+    const c = getEmpColor(emp.idx);
+    const on = isEmpSlotActive(emp);
+    const label = on ? formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim()) : formatEmpIdx2(emp.idx) + '.';
+    const st = `border-color:${c.color}55;color:${c.color}`;
+    if (on) {
       html += `<button type="button" class="rpt-jump-btn" style="${st}" onclick="void showReportTab('emp${emp.idx}')">${label}</button>`;
-    });
-    html += `</div>`;
-  }
-
+    } else {
+      html += `<button type="button" class="rpt-jump-btn report-tab-muted" style="${st}" disabled title="미배정 번호">${label}</button>`;
+    }
+  });
   html += `
+  </div>
+
   <table class="emp-stat-table">
     <thead><tr>
       <th>직원</th><th>전체</th><th>완료</th><th>미이행</th><th>완료율</th><th>진행도</th><th>중요★</th><th>건의</th>
     </tr></thead>
     <tbody>`;
 
-  EMPLOYEES.filter(isEmpSlotActive).forEach(emp => {
+  // Show ALL employees - merge server data with EMPLOYEES list
+  EMPLOYEES.forEach(emp => {
     const e = emps.find(x => x.empIdx === emp.idx) || { totalItems:0, doneItems:0, undoneItems:0, starItems:0, suggestions:0 };
     const r = e.totalItems>0 ? Math.round(e.doneItems/e.totalItems*100) : 0;
     const c = getEmpColor(emp.idx);
-    const nameCell = formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim());
-    html += `<tr onclick="void showReportTab('emp${emp.idx}')" style="cursor:pointer;">
+    const on = isEmpSlotActive(emp);
+    const nameCell = on ? formatEmpIdx2(emp.idx) + '.' + esc(String(emp.name).trim()) : formatEmpIdx2(emp.idx) + '.';
+    const rowClick = on ? ` onclick="void showReportTab('emp${emp.idx}')"` : '';
+    const rowCls = on ? '' : ' class="rpt-stat-row-inactive"';
+    html += `<tr${rowCls}${rowClick} style="${on ? '' : 'opacity:.72;'}cursor:${on ? 'pointer' : 'default'};">
       <td><b style="color:${c.color}">${nameCell}</b></td>
       <td>${e.totalItems}</td>
       <td style="color:var(--green);font-weight:bold;">${e.doneItems}</td>
@@ -1860,16 +1686,16 @@ function generateOverviewHtml(isDaily = false, statsObj = null) {
 
   html += `</tbody></table>`;
 
+  // Suggestions
   if (weeklyData.suggestions?.length) {
-    html += `<div class="suggestion-list"><div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">특이/건의/차주계획 수집</div></div>`;
-    html += weeklyData.suggestions.map(s => {
-      const cLabel = s.category ? `<span class="mi-cat" style="background:#fff3e0;color:#e65100;margin-right:8px;">${esc(s.category)}</span>` : '';
-      return `<div class="suggestion-item"><span class="sug-name">${esc(s.name)}</span><span class="sug-date">${s.date}</span><span>${cLabel}${esc(s.content)}</span></div>`;
-    }).join('');
+    html += `<div class="suggestion-list"><div class="section-head"><div class="section-dot dot-special"></div><div class="section-title">건의사항 수집</div></div>`;
+    html += weeklyData.suggestions.map(s => `
+      <div class="suggestion-item"><span class="sug-name">${esc(s.name)}</span><span class="sug-date">${s.date}</span><span>${esc(s.content)}</span></div>
+    `).join('');
     html += '</div>';
   }
-  html += `</div>`; // pt-view end
-  return html;
+
+  document.getElementById('reportBody').innerHTML = html;
 }
 
 function dedupeLogItems(items) {
@@ -1890,206 +1716,86 @@ function ptLineItem(i) {
 }
 
 async function renderEmpDetail(empIdx) {
-  try {
-    const s = weeklyData._start, e = weeklyData._end;
-    document.getElementById('reportBody').innerHTML = await generateEmpReportHtml(empIdx, s, e, false, weeklyData);
-  } catch (e) { console.error(e); showToast('상세 로드 실패'); }
-}
-
-function getFormattedDateAndDay(dateStr) {
-  if (!dateStr) return '';
-  const days = ['일', '월', '화', '수', '목', '금', '토'];
-  const d = new Date(dateStr);
-  const dayName = days[d.getDay()];
-  const dd = String(d.getDate()).padStart(2, '0');
-  return dayName ? `${dd}일(${dayName})` : '';
-}
-
-async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = null) {
-  const data = statsObj || weeklyData;
+  const s = weeklyData._start, e = weeklyData._end;
   const idxNum = parseInt(empIdx, 10);
-  const r = await fetch(`/api/weekly-detail/${empIdx}/${s}/${e}`);
-  const raw = await r.json();
-  const days = Array.isArray(raw) ? raw : [];
-  const emp = (data.employees || []).find(x => x.empIdx === idxNum) || {};
-  const empRec = EMPLOYEES.find(x => x.idx === idxNum) || {};
-  const titleName = isEmpSlotActive(empRec)
-    ? formatEmpIdx2(idxNum) + '.' + String(empRec.name).trim()
-    : formatEmpIdx2(idxNum) + '.';
-  const rate = emp.totalItems > 0 ? Math.round(emp.doneItems / emp.totalItems * 100) : 0;
-  const c = getEmpColor(idxNum);
+  try {
+    const r = await fetch(`/api/weekly-detail/${empIdx}/${s}/${e}`);
+    const days = await r.json();
+    const emp = (weeklyData.employees || []).find(x => x.empIdx === idxNum) || {};
+    const empRec = EMPLOYEES.find(x => x.idx === idxNum) || {};
+    const titleName = isEmpSlotActive(empRec)
+      ? formatEmpIdx2(idxNum) + '.' + String(empRec.name).trim()
+      : formatEmpIdx2(idxNum) + '.';
+    const rate = emp.totalItems > 0 ? Math.round(emp.doneItems / emp.totalItems * 100) : 0;
+    const c = getEmpColor(idxNum);
 
-  const titleType = isDaily ? '일일' : '주간';
-  const periodStr = isDaily ? s : `${s} ~ ${e}`;
-
-  const allItems = [];
-  const specialAgg = { '특이사항': [], '건의사항': [], '차주계획': [], '기타': [] };
-  
-  days.forEach(day => {
-    ['today', 'tomorrow'].forEach(sec => {
-      (day.sections?.[sec] || []).forEach(i => {
-        if (i && String(i.content || '').trim()) {
-          allItems.push({ ...i, _date: day.date });
-        }
+    const doneAgg = [];
+    const nextUndone = [];
+    const specialAgg = [];
+    days.forEach(day => {
+      (day.sections?.today || []).forEach(i => {
+        if (!i || !String(i.content || '').trim()) return;
+        if (i.done) doneAgg.push(i);
+      });
+      (day.sections?.tomorrow || []).forEach(i => {
+        if (!i || !String(i.content || '').trim()) return;
+        if (i.done) doneAgg.push(i);
+        else nextUndone.push(i);
+      });
+      (day.sections?.special || []).forEach(i => {
+        if (i && String(i.content || '').trim()) specialAgg.push(i);
       });
     });
-    (day.sections?.special || []).forEach(i => {
-      if (i && String(i.content || '').trim()) {
-        const cat = ['특이사항', '건의사항', '차주계획'].includes(i.category) ? i.category : '기타';
-        specialAgg[cat].push({ ...i, _date: day.date });
-      }
-    });
-  });
+    const doneList = dedupeLogItems(doneAgg);
+    const nextList = dedupeLogItems(nextUndone);
+    const specList = dedupeLogItems(specialAgg);
+    const importantList = emp.importantItems || [];
 
-  const dedupedItems = dedupeLogItems(allItems);
-  const importantList = dedupedItems.filter(i => (parseInt(i.stars, 10) || 0) === 3);
-  const generalList = dedupedItems.filter(i => (parseInt(i.stars, 10) || 0) < 3);
+    let html = `
+    <div class="pt-view" style="border-top:4px solid ${c.color}">
+      <div class="pt-header">
+        <h2 style="color:${c.color}">${esc(titleName)} 주간 업무보고</h2>
+        <div class="pt-period">${s} ~ ${e} · 기간 합산(날짜별 구분 없음)</div>
+      </div>
+      <div class="pt-stats">
+        <div class="pt-stat"><div class="ps-num">${emp.totalItems || 0}</div><div class="ps-label">전체</div></div>
+        <div class="pt-stat"><div class="ps-num" style="color:var(--green)">${emp.doneItems || 0}</div><div class="ps-label">완료</div></div>
+        <div class="pt-stat"><div class="ps-num" style="color:var(--red)">${emp.undoneItems || 0}</div><div class="ps-label">미이행</div></div>
+        <div class="pt-stat"><div class="ps-num">${rate}%</div><div class="ps-label">완료율</div></div>
+        <div class="pt-stat"><div class="ps-num" style="color:var(--orange)">${emp.starItems || 0}</div><div class="ps-label">중요★★★</div></div>
+      </div>`;
 
-  let html = `
-  <div class="pt-view" style="border-top: ${isPrintingAll ? 'none' : `4px solid ${c.color}`}">
-    <div class="pt-header">
-      <h2 style="color:${c.color}">${esc(titleName)} ${titleType} 업무보고</h2>
-      <div class="pt-period">${periodStr} · 데이터 합산</div>
-    </div>
-    <div class="pt-stats">
-      <div class="pt-stat"><div class="ps-num">${emp.totalItems || 0}</div><div class="ps-label">전체 건수</div></div>
-      <div class="pt-stat"><div class="ps-num" style="color:var(--green)">${emp.doneItems || 0}</div><div class="ps-label">실시 건수</div></div>
-      <div class="pt-stat"><div class="ps-num" style="color:var(--red)">${emp.undoneItems || 0}</div><div class="ps-label">미실시 건수</div></div>
-      <div class="pt-stat"><div class="ps-num">${rate}%</div><div class="ps-label">완료율</div></div>
-      <div class="pt-stat"><div class="ps-num" style="color:var(--orange)">${emp.starItems || 0}</div><div class="ps-label">핵심★★★</div></div>
-    </div>`;
+    if (!isEmpSlotActive(empRec)) {
+      html += `<p style="padding:10px 12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#5d4037;margin-bottom:16px;">미배정 슬롯(${formatEmpIdx2(idxNum)}.)입니다. 이 번호로 저장된 데이터는 그대로 유지됩니다. 충원 시 서버 <code>server.js</code>의 <code>EMPLOYEES</code>에서 해당 <code>idx</code>에 <code>name</code>과 <code>active:true</code>를 넣으면 작성·제출할 수 있습니다.</p>`;
+    }
 
-  if (!isEmpSlotActive(empRec)) {
-    html += `<p style="padding:10px 12px;background:#fff8e1;border-radius:8px;font-size:13px;color:#5d4037;margin-bottom:16px;">미배정 슬롯입니다.</p>`;
-  }
-
-  // 1. 핵심 업무 (체크박스 제거, 요일 표시)
-  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 보고 (★★★)</h3><div class="pt-agg-body">`;
-  if (importantList.length) {
-    html += importantList.map(i => {
-      const dayStr = getFormattedDateAndDay(i._date);
-      return `<div class="pt-item">• ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
-    }).join('');
-  } else {
-    html += '<p class="pt-agg-empty">해당 없음</p>';
-  }
-  html += `</div></div>`;
-
-  // 2. 특이사항 / 건의사항 / 차주계획
-  ['특이사항', '건의사항', '차주계획'].forEach(cat => {
-    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">${cat}</h3><div class="pt-agg-body">`;
-    const list = specialAgg[cat];
-    if (list.length) {
-      html += list.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('');
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">핵심 업무 (★★★)</h3><div class="pt-agg-body">`;
+    if (importantList.length) {
+      html += importantList.map(i => `<div class="pt-item">${i.done ? '✅' : '⬜'} ${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}<span class="pi-stars">★★★</span> ${esc(i.content)} <span style="font-size:12px;padding:1px 8px;border-radius:4px;background:${i.done ? '#e8f5e9' : '#fce4ec'};color:${i.done ? '#2e7d32' : '#c62828'}">${i.done ? '완료' : '진행중'}</span></div>`).join('');
     } else {
-      html += '<p class="pt-agg-empty">내용 없음</p>';
+      html += '<p class="pt-agg-empty">해당 없음</p>';
     }
     html += `</div></div>`;
-  });
 
-  // 3. 일반 실시 현황 요약
-  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (요약)</h3><div class="pt-agg-body" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px 20px;">`;
-  const catGroups = {};
-  dedupedItems.forEach(i => {
-    const cat = i.category || '기타';
-    if (!catGroups[cat]) catGroups[cat] = { done: 0, undone: 0 };
-    if (i.done) catGroups[cat].done++;
-    else catGroups[cat].undone++;
-  });
-  const sortedCats = Object.keys(catGroups).sort();
-  if (sortedCats.length) {
-    html += sortedCats.map(cat => `
-      <div style="padding-bottom: 6px; border-bottom: 1px solid #f0f0f0;">
-        <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 3px; line-height: 1.3;">• ${esc(cat)}</div>
-        <div style="font-size: 11px; margin-left: 10px; color: #666; display: flex; gap: 8px; align-items: center;">
-          <span><b style="color:var(--green);">${catGroups[cat].done}</b> 실시</span>
-          <span style="color:#eee;">|</span>
-          <span><b style="color:var(--red);">${catGroups[cat].undone}</b> 미실시</span>
-        </div>
-      </div>
-    `).join('');
-  } else {
-    html += '<p class="pt-agg-empty" style="grid-column:1/-1;">데이터 없음</p>';
-  }
-  html += `</div></div>`;
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">실시 업무 (기간 내 완료)</h3><div class="pt-agg-body">`;
+    html += doneList.length ? doneList.map(ptLineItem).join('') : '<p class="pt-agg-empty">내용 없음</p>';
+    html += `</div></div>`;
 
-  // 4. 일반 업무 실시 현황 (상세) - 박스 없이 전체 스크롤 가능하도록 수정
-  html += `<div class="pt-agg-block"><h3 class="pt-agg-title">일반 업무 실시 현황 (상세)</h3><div class="pt-detailed-list">`;
-  if (generalList.length) {
-    html += generalList.map(i => {
-      const dc = i.done ? ' pi-done' : '';
-      const mark = i.done ? '✅' : '⬜';
-      const dayStr = getFormattedDateAndDay(i._date);
-      return `<div class="pt-item${dc}">${mark} ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
-    }).join('');
-  } else {
-    html += '<p class="pt-agg-empty">상세 내역 없음</p>';
-  }
-  html += `</div></div>`;
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">다음주 실시 업무 (미완료 · 내일 할 일)</h3><div class="pt-agg-body">`;
+    html += nextList.length ? nextList.map(ptLineItem).join('') : '<p class="pt-agg-empty">내용 없음</p>';
+    html += `</div></div>`;
 
-  if (!days.length && !importantList.length) {
-    html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
-  }
-  html += '</div>';
-  return html;
-}
+    html += `<div class="pt-agg-block"><h3 class="pt-agg-title">특이·건의 사항</h3><div class="pt-agg-body">`;
+    html += specList.length ? specList.map(i => `<div class="pt-item">• ${esc(i.content)}</div>`).join('') : '<p class="pt-agg-empty">내용 없음</p>';
+    html += `</div></div>`;
 
-async function printReport(mode) {
-  const sInput = document.getElementById('rptStart').value;
-  const eInput = document.getElementById('rptEnd').value;
-  if (!sInput || !eInput || !weeklyData) {
-    showToast('기간을 선택하고 조회한 뒤 사용해 주세요.');
-    return;
-  }
-
-  const today = todayStr();
-  const isDaily = mode.includes('today');
-  let start = sInput, end = eInput;
-  if (isDaily) { start = today; end = today; }
-
-  showToast('데이터를 수집하고 있습니다. 잠시만 기다려 주세요...', 5000);
-  isPrintingAll = true;
-
-  try {
-    // 인쇄용 임시 통계 데이터 페치 (isDaily일 경우 오늘 하루치만 가져옴)
-    const statsRes = await fetch(`/api/weekly-stats/${start}/${end}`);
-    const printStats = await statsRes.json();
-    printStats._start = start;
-    printStats._end = end;
-
-    const activeTab = document.querySelector('#reportTabs .report-tab.active')?.dataset.rtab || 'overview';
-    const empsToPrint = mode.includes('all') ? EMPLOYEES.filter(isEmpSlotActive) : [];
-    
-    let combinedHtml = '';
-    
-    if (mode.includes('all')) {
-      combinedHtml += generateOverviewHtml(isDaily, printStats);
-      for (const emp of empsToPrint) {
-        combinedHtml += await generateEmpReportHtml(emp.idx, start, end, isDaily, printStats);
-      }
-    } else {
-      if (activeTab === 'overview') {
-        combinedHtml += generateOverviewHtml(isDaily, printStats);
-      } else {
-        combinedHtml += await generateEmpReportHtml(activeTab.replace('emp',''), start, end, isDaily, printStats);
-      }
+    if (!days.length && !importantList.length) {
+      html += '<p style="text-align:center;color:#aaa;padding:32px;">해당 기간에 작성된 업무일지가 없습니다.</p>';
     }
 
-    const oldBody = document.getElementById('reportBody').innerHTML;
-    document.getElementById('reportBody').innerHTML = combinedHtml;
-    
-    setTimeout(() => {
-      window.print();
-      document.getElementById('reportBody').innerHTML = oldBody;
-      isPrintingAll = false;
-      showToast('인쇄가 시작되었습니다.');
-    }, 600);
-
-  } catch (err) {
-    console.error(err);
-    showToast('데이터 로드 중 오류가 발생했습니다.');
-    isPrintingAll = false;
-  }
+    html += '</div>';
+    document.getElementById('reportBody').innerHTML = html;
+  } catch { showToast('상세 로드 실패'); }
 }
 
 async function openReportPresentation() {
@@ -2255,13 +1961,10 @@ document.addEventListener('keydown', (ev) => {
   canvas.addEventListener('wheel', (e) => {
     const overlay = document.getElementById('reportPresOverlay');
     if (!overlay || overlay.hasAttribute('hidden')) return;
-    
-    let dy = e.deltaY;
-    if (e.deltaMode === 1) dy *= 40; // DOM_DELTA_LINE
-    else if (e.deltaMode === 2) dy *= window.innerHeight; // DOM_DELTA_PAGE
-    
-    overlay.scrollTop += dy;
-    e.preventDefault();
+    if (body) {
+      body.scrollTop += e.deltaY;
+      e.preventDefault();
+    }
   }, { passive: false });
   canvas.addEventListener('pointerdown', (e) => {
     const overlay = document.getElementById('reportPresOverlay');
@@ -2285,14 +1988,8 @@ document.addEventListener('keydown', (ev) => {
   });
 
   function forwardPresBodyWheel(ev) {
-    const overlay = document.getElementById('reportPresOverlay');
-    if (!overlay || overlay.hasAttribute('hidden')) return;
-    
-    let dy = ev.deltaY;
-    if (ev.deltaMode === 1) dy *= 40; // DOM_DELTA_LINE
-    else if (ev.deltaMode === 2) dy *= window.innerHeight; // DOM_DELTA_PAGE
-    
-    overlay.scrollTop += dy;
+    if (!body) return;
+    body.scrollTop += ev.deltaY;
     ev.preventDefault();
   }
   ['reportPresHitPrev', 'reportPresHitNext'].forEach((id) => {
