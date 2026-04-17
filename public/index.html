@@ -126,6 +126,31 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 }
 .user-badge::before { content: '👤'; margin-right: 6px; font-size: 14px; }
 
+/* 좌우 여백 이름 표시 */
+.user-side-name {
+  position: fixed;
+  top: 45%;
+  transform: translateY(-50%);
+  font-size: 100px;
+  font-weight: 900;
+  color: var(--emp-color);
+  opacity: 0.12;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  letter-spacing: -2px;
+}
+.user-side-left { left: 30px; }
+.user-side-right { right: 30px; }
+
+@media (max-width: 1400px) {
+  .user-side-name { font-size: 70px; opacity: 0.08; }
+}
+@media (max-width: 1100px) {
+  .user-side-name { display: none; }
+}
+
 /* ===== Top Bar ===== */
 .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; background: white; padding: 10px 16px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); flex-wrap: wrap; position: relative; z-index: 1; }
 .bookmark-hint {
@@ -755,6 +780,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
 <!-- Floating User Identification Badge -->
 <div id="userBadge" class="user-badge" style="display:none;"></div>
 
+<!-- Side Name Labels (Requested by User) -->
+<div id="userSideLeft" class="user-side-name user-side-left"></div>
+<div id="userSideRight" class="user-side-name user-side-right"></div>
+
 <div class="header">
   <div class="header-main-row">
     <div class="header-left-block">
@@ -1193,6 +1222,17 @@ function updateWatermark() {
     badge.textContent = empName;
     badge.style.borderColor = 'var(--emp-color)';
     badge.style.color = 'var(--emp-color)';
+  }
+
+  // 좌우 사이드 이름 업데이트
+  const sideL = document.getElementById('userSideLeft');
+  const sideR = document.getElementById('userSideRight');
+  if (sideL && sideR) {
+    const isWritePage = document.getElementById('page-write').classList.contains('active');
+    sideL.style.display = isWritePage ? '' : 'none';
+    sideR.style.display = isWritePage ? '' : 'none';
+    sideL.textContent = shortName;
+    sideR.textContent = shortName;
   }
 }
 
