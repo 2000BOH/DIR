@@ -96,15 +96,35 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 
 /* ===== Watermark ===== */
 .watermark-wrap { position: fixed; top: 60px; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.watermark-name { position: absolute; font-size: 180px; font-weight: 900; white-space: nowrap; user-select: none; letter-spacing: 20px; animation: wm-drift 12s ease-in-out infinite alternate; }
+.watermark-name { position: absolute; font-size: 260px; font-weight: 900; white-space: nowrap; user-select: none; letter-spacing: 20px; animation: wm-drift 12s ease-in-out infinite alternate; opacity: 0.1; }
 .watermark-name:nth-child(1) { top: 5%; left: -5%; transform: rotate(-18deg); }
 .watermark-name:nth-child(2) { top: 35%; right: -10%; transform: rotate(-18deg); animation-delay: -4s; }
 .watermark-name:nth-child(3) { bottom: 5%; left: 10%; transform: rotate(-18deg); animation-delay: -8s; }
 @keyframes wm-drift {
-  0% { opacity: 0.5; transform: rotate(-18deg) translateX(0); }
-  50% { opacity: 1; }
-  100% { opacity: 0.5; transform: rotate(-18deg) translateX(40px); }
+  0% { transform: rotate(-18deg) translateX(0); }
+  100% { transform: rotate(-18deg) translateX(40px); }
 }
+
+/* 현재 사용자 표시 배지 */
+.user-badge {
+  position: fixed;
+  top: 85px;
+  right: 25px;
+  background: white;
+  padding: 8px 18px;
+  border-radius: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  z-index: 50;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--emp-color);
+  border: 2.5px solid var(--emp-color);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0.95;
+}
+.user-badge::before { content: '👤'; margin-right: 6px; font-size: 14px; }
 
 /* ===== Top Bar ===== */
 .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; background: white; padding: 10px 16px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); flex-wrap: wrap; position: relative; z-index: 1; }
@@ -185,7 +205,7 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 
 .cell-cat-select { width: 100%; border: 1px solid transparent; padding: 5px 4px; border-radius: 5px; font-size: 12px; background: transparent; cursor: pointer; color: #333; appearance: none; -webkit-appearance: none; }
 .cell-cat-select:focus { border-color: var(--emp-pastel-border); background: #fff; outline: none; box-shadow: 0 0 0 2px var(--emp-pastel-cat-focus); }
-.cell-content { width: 100%; border: 1px solid transparent; padding: 5px 7px; border-radius: 5px; font-size: 14px; background: transparent; }
+.cell-content { width: 100%; border: 1px solid transparent; padding: 5px 7px; border-radius: 5px; font-size: 14px; background: transparent; word-break: keep-all; }
 .cell-content:focus { border-color: var(--emp-color); background: #fff; outline: none; box-shadow: 0 0 0 2px var(--emp-pastel-cat-focus); }
 .chk { width: 18px; height: 18px; cursor: pointer; accent-color: var(--emp-color); }
 .done-label { font-size: 11px; color: var(--green); font-weight: bold; white-space: nowrap; display: none; margin-left: 2px; }
@@ -267,7 +287,7 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 .admin-card-body { padding: 12px 16px; max-height: 520px; overflow-y: auto; }
 .admin-card-body .mini-section { margin-bottom: 10px; }
 .admin-card-body .mini-label { font-size: 11px; color: #666; font-weight: bold; margin-bottom: 4px; padding: 2px 8px; background: #f0f4f8; border-radius: 4px; display: inline-block; }
-.admin-card-body .mini-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; padding: 6px 8px; line-height: 1.45; border-radius: 6px; }
+.admin-card-body .mini-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; padding: 6px 8px; line-height: 1.45; border-radius: 6px; word-break: keep-all; }
 .mini-item .mi-done { color: var(--green); flex-shrink: 0; font-weight: bold; }
 .mini-item .mi-undone { color: #bbb; flex-shrink: 0; }
 .mini-item .mi-stars { color: var(--orange); font-size: 11px; flex-shrink: 0; }
@@ -329,7 +349,7 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 .pt-day { margin-bottom: 16px; }
 .pt-day-title { font-size: 14px; font-weight: bold; color: var(--blue); margin-bottom: 6px; padding: 4px 10px; background: #e8f0fe; border-radius: 6px; display: inline-block; }
 .pt-items { padding-left: 12px; }
-.pt-item { padding: 4px 0; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.pt-item { padding: 4px 0; font-size: 14px; display: flex; align-items: flex-start; gap: 8px; word-break: keep-all; }
 .pt-item .pi-stars { color: var(--orange); font-size: 12px; }
 .pt-item .pi-cat { background: #e8f0fe; padding: 1px 8px; border-radius: 4px; font-size: 12px; color: #1565c0; }
 .pt-item.pi-done { color: #888; }
@@ -732,6 +752,9 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   <div class="watermark-name" id="wm3"></div>
 </div>
 
+<!-- Floating User Identification Badge -->
+<div id="userBadge" class="user-badge" style="display:none;"></div>
+
 <div class="header">
   <div class="header-main-row">
     <div class="header-left-block">
@@ -959,7 +982,7 @@ const FALLBACK_EMPLOYEES = [
   { idx: 1, name: '양남식 차장', active: true },
   { idx: 2, name: '이수용 차장', active: true },
   { idx: 3, name: '이태욱 과장', active: true },
-  { idx: 4, name: '', active: false },
+  { idx: 4, name: '유태형 과장', active: true },
   { idx: 5, name: '허아름 대리', active: true },
   { idx: 6, name: '김동훈 대리', active: true },
   { idx: 7, name: '', active: false },
@@ -1153,10 +1176,24 @@ function initBookmarkHintBar() {
 
 // ============ WATERMARK ============
 function updateWatermark() {
-  const name = getEmpDisplayLabel(curEmpIdx);
+  const empName = getEmpName(curEmpIdx);
+  // 성을 제외한 이름 두 글자 추출 (예: '양남식 과장' -> '남식')
+  const pureName = empName.split(' ')[0] || '';
+  const shortName = pureName.length >= 2 ? pureName.slice(-2) : pureName;
+  
   ['wm1','wm2','wm3'].forEach(id => {
-    document.getElementById(id).textContent = name;
+    document.getElementById(id).textContent = shortName;
   });
+
+  // 우측 상단 배지 업데이트
+  const badge = document.getElementById('userBadge');
+  if (badge) {
+    const isWritePage = document.getElementById('page-write').classList.contains('active');
+    badge.style.display = isWritePage ? '' : 'none';
+    badge.textContent = empName;
+    badge.style.borderColor = 'var(--emp-color)';
+    badge.style.color = 'var(--emp-color)';
+  }
 }
 
 // ============ EMPLOYEE BUTTONS ============

@@ -55,7 +55,7 @@ const EMPLOYEES = [
   { idx: 1, name: '양남식 차장', active: true },
   { idx: 2, name: '이수용 차장', active: true },
   { idx: 3, name: '이태욱 과장', active: true },
-  { idx: 4, name: '', active: false },
+  { idx: 4, name: '유태형 과장', active: true },
   { idx: 5, name: '허아름 대리', active: true },
   { idx: 6, name: '김동훈 대리', active: true },
   { idx: 7, name: '', active: false },
