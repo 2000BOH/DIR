@@ -473,11 +473,46 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
   -webkit-overflow-scrolling: touch;
 }
 .report-pres-overlay[hidden] { display: none !important; }
-.report-pres-close {
+.report-pres-top-right {
   position: fixed;
   top: 10px;
   right: 10px;
   z-index: 5100;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.report-pres-pagination {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,.96);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.12);
+  padding: 4px 4px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.report-pres-pagination button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  color: var(--blue-dark);
+  font-size: 14px;
+}
+.report-pres-pagination button:hover {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+.report-pres-pagination span {
+  margin: 0 6px;
+  color: #333;
+}
+.pres-side-name { font-size: 65px; z-index: 5020; letter-spacing: -1px; }
+@media (max-width: 1400px) { .pres-side-name { font-size: 45px; } }
+@media (max-width: 1100px) { .pres-side-name { display: none !important; } }
+.report-pres-close {
   pointer-events: auto;
   padding: 9px 16px;
   font-size: calc(13px + 2pt);
@@ -926,7 +961,16 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   <div id="reportPresHitNext" class="report-pres-edge-hit report-pres-edge-hit--next" role="presentation" aria-hidden="true" title="다음 페이지" onclick="void presentationNavNext()"></div>
   <button type="button" id="reportPresPrev" class="report-pres-nav report-pres-nav-prev" hidden aria-label="이전 직원" onclick="presentationNavPrev()">‹</button>
   <button type="button" id="reportPresNext" class="report-pres-nav report-pres-nav-next" hidden aria-label="다음 직원" onclick="presentationNavNext()">›</button>
-  <button type="button" class="report-pres-close" onclick="closeReportPresentation()">닫기 (Esc)</button>
+  <div class="report-pres-top-right">
+    <div class="report-pres-pagination">
+      <button type="button" onclick="presentationNavPrev()" title="이전 페이지">◀</button>
+      <span id="presPageIndicator">1 / 1</span>
+      <button type="button" onclick="presentationNavNext()" title="다음 페이지">▶</button>
+    </div>
+    <button type="button" class="report-pres-close" onclick="closeReportPresentation()">닫기 (Esc)</button>
+  </div>
+  <div id="presSideLeft" class="user-side-name user-side-left pres-side-name" style="display: none;"></div>
+  <div id="presSideRight" class="user-side-name user-side-right pres-side-name" style="display: none;"></div>
 </div>
 
 <script>
@@ -1014,7 +1058,7 @@ const FALLBACK_EMPLOYEES = [
   { idx: 4, name: '유태형 과장', active: true },
   { idx: 5, name: '허아름 대리', active: true },
   { idx: 6, name: '김동훈 대리', active: true },
-  { idx: 7, name: '강민수 사원', active: true },
+  { idx: 7, name: '', active: false },
   { idx: 8, name: '', active: false },
   { idx: 9, name: '', active: false },
   { idx: 10, name: '', active: false },
@@ -1774,19 +1818,47 @@ function updatePresentationNavVisibility() {
   const next = document.getElementById('reportPresNext');
   const hitP = document.getElementById('reportPresHitPrev');
   const hitN = document.getElementById('reportPresHitNext');
-  if (!prev || !next) return;
+  const indicator = document.getElementById('presPageIndicator');
   const tabs = getPresentationNavTabs();
+  
+  if (indicator) {
+    let currentIdx = tabs.indexOf(presentationNavRtab);
+    if (currentIdx < 0) currentIdx = 0;
+    indicator.textContent = `${currentIdx + 1} / ${tabs.length}`;
+  }
+
   if (tabs.length <= 1) {
-    prev.hidden = true;
-    next.hidden = true;
+    if (prev) prev.hidden = true;
+    if (next) next.hidden = true;
     if (hitP) hitP.hidden = true;
     if (hitN) hitN.hidden = true;
     return;
   }
-  prev.hidden = false;
-  next.hidden = false;
+  if (prev) prev.hidden = false;
+  if (next) next.hidden = false;
   if (hitP) hitP.hidden = false;
   if (hitN) hitN.hidden = false;
+}
+
+function updatePresSideNames() {
+  const sideL = document.getElementById('presSideLeft');
+  const sideR = document.getElementById('presSideRight');
+  if (!sideL || !sideR) return;
+  if (presentationNavRtab && presentationNavRtab.startsWith('emp')) {
+    const idx = parseInt(presentationNavRtab.replace('emp', ''), 10);
+    const emp = EMPLOYEES.find(e => e.idx === idx);
+    const fullName = emp && emp.name ? emp.name : '';
+    sideL.textContent = fullName;
+    sideR.textContent = fullName;
+    sideL.style.display = fullName ? '' : 'none';
+    sideR.style.display = fullName ? '' : 'none';
+    const c = getEmpColor(idx);
+    sideL.style.color = c.color;
+    sideR.style.color = c.color;
+  } else {
+    sideL.style.display = 'none';
+    sideR.style.display = 'none';
+  }
 }
 
 function resizePresCanvas() {
@@ -1846,6 +1918,7 @@ function syncReportPresentationIfOpen() {
   if (!overlay || !presBody || overlay.hasAttribute('hidden')) return;
   presBody.innerHTML = document.getElementById('reportBody').innerHTML;
   updatePresentationNavVisibility();
+  updatePresSideNames();
   clearPresCanvas();
   resizePresCanvas();
 }
