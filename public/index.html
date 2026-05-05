@@ -963,9 +963,9 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   <button type="button" id="reportPresNext" class="report-pres-nav report-pres-nav-next" hidden aria-label="다음 직원" onclick="presentationNavNext()">›</button>
   <div class="report-pres-top-right">
     <div class="report-pres-pagination">
-      <button type="button" onclick="presentationNavPrev()" title="이전 페이지">◀</button>
+      <button type="button" onclick="presScrollPrev()" title="위로 스크롤 (이전)">◀</button>
       <span id="presPageIndicator">1 / 1</span>
-      <button type="button" onclick="presentationNavNext()" title="다음 페이지">▶</button>
+      <button type="button" onclick="presScrollNext()" title="아래로 스크롤 (다음)">▶</button>
     </div>
     <button type="button" class="report-pres-close" onclick="closeReportPresentation()">닫기 (Esc)</button>
   </div>
@@ -1818,14 +1818,7 @@ function updatePresentationNavVisibility() {
   const next = document.getElementById('reportPresNext');
   const hitP = document.getElementById('reportPresHitPrev');
   const hitN = document.getElementById('reportPresHitNext');
-  const indicator = document.getElementById('presPageIndicator');
   const tabs = getPresentationNavTabs();
-  
-  if (indicator) {
-    let currentIdx = tabs.indexOf(presentationNavRtab);
-    if (currentIdx < 0) currentIdx = 0;
-    indicator.textContent = `${currentIdx + 1} / ${tabs.length}`;
-  }
 
   if (tabs.length <= 1) {
     if (prev) prev.hidden = true;
@@ -1838,6 +1831,32 @@ function updatePresentationNavVisibility() {
   if (next) next.hidden = false;
   if (hitP) hitP.hidden = false;
   if (hitN) hitN.hidden = false;
+}
+
+function updatePresScrollIndicator() {
+  const overlay = document.getElementById('reportPresOverlay');
+  const indicator = document.getElementById('presPageIndicator');
+  if (!overlay || !indicator || overlay.hasAttribute('hidden')) return;
+  const h = overlay.clientHeight || window.innerHeight;
+  const total = Math.max(1, Math.ceil(overlay.scrollHeight / h));
+  let current = Math.floor((overlay.scrollTop + h/2) / h) + 1;
+  if (current < 1) current = 1;
+  if (current > total) current = total;
+  indicator.textContent = `${current} / ${total}`;
+}
+
+function presScrollPrev() {
+  const overlay = document.getElementById('reportPresOverlay');
+  if (!overlay) return;
+  const h = overlay.clientHeight || window.innerHeight;
+  overlay.scrollBy({ top: -(h * 0.9), behavior: 'smooth' });
+}
+
+function presScrollNext() {
+  const overlay = document.getElementById('reportPresOverlay');
+  if (!overlay) return;
+  const h = overlay.clientHeight || window.innerHeight;
+  overlay.scrollBy({ top: (h * 0.9), behavior: 'smooth' });
 }
 
 function updatePresSideNames() {
@@ -1921,6 +1940,8 @@ function syncReportPresentationIfOpen() {
   updatePresSideNames();
   clearPresCanvas();
   resizePresCanvas();
+  overlay.scrollTop = 0;
+  setTimeout(updatePresScrollIndicator, 100);
 }
 
 async function showReportTab(tab) {
@@ -2459,6 +2480,10 @@ window.addEventListener('beforeunload', () => {
       new Blob([JSON.stringify(logData)], {type:'application/json'}));
   }
 });
+
+const reportPresOverlay = document.getElementById('reportPresOverlay');
+if (reportPresOverlay) reportPresOverlay.addEventListener('scroll', updatePresScrollIndicator);
+window.addEventListener('resize', updatePresScrollIndicator);
 </script>
 </body>
 </html>
