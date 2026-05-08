@@ -482,6 +482,29 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
   gap: 10px;
   align-items: center;
 }
+.pres-emp-nav {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+}
+.pres-emp-nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-dark);
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.pres-emp-nav button:hover {
+  background: #e8f0fe;
+}
 .pres-scroll-widget {
   position: fixed;
   top: 50%;
@@ -535,11 +558,9 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
 .pres-side-name { 
   font-size: 65px; 
   z-index: -1; 
-  letter-spacing: 5px; 
+  letter-spacing: -2px; 
   text-align: center; 
-  line-height: 1.15; 
-  writing-mode: vertical-rl; 
-  text-orientation: upright; 
+  line-height: 1.05; 
 }
 @media (max-width: 1400px) { .pres-side-name { font-size: 45px; } }
 @media (max-width: 1100px) { .pres-side-name { display: none !important; } }
@@ -620,7 +641,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   padding-top: 36px;
   box-sizing: border-box;
   min-height: 100%;
-  font-size: calc(16px + 3.5pt);
+  font-size: calc(16px + 4.5pt);
   line-height: 1.55;
 }
 @media (max-width: 768px) {
@@ -632,11 +653,11 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   display: none; /* 프리젠테이션 시 직원 바로가기 숨김 */
 }
 .report-pres-body .rpt-overview-jump-label {
-  font-size: calc(13px + 3pt);
+  font-size: calc(13px + 4pt);
   font-weight: 800;
 }
 .report-pres-body .rpt-jump-btn {
-  font-size: calc(13px + 3pt);
+  font-size: calc(13px + 4pt);
   padding: 9px 14px;
 }
 .report-pres-body .stat-grid {
@@ -648,22 +669,22 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border: 1px solid #e2e6ed;
 }
 .report-pres-body .stat-box .stat-num {
-  font-size: calc(28px + 4pt);
+  font-size: calc(28px + 5pt);
 }
 .report-pres-body .stat-box .stat-label {
-  font-size: calc(12px + 3pt);
+  font-size: calc(12px + 4pt);
   margin-top: 6px;
 }
 .report-pres-body .emp-stat-table {
   border: 1px solid #d8dee8;
 }
 .report-pres-body .emp-stat-table thead th {
-  font-size: calc(13px + 3pt);
+  font-size: calc(13px + 4pt);
   padding: 12px 16px;
   border-bottom: 2px solid #c5cdd8;
 }
 .report-pres-body .emp-stat-table td {
-  font-size: calc(14px + 3.5pt);
+  font-size: calc(14px + 4.5pt);
   padding: 12px 16px;
   border-top: 2px solid #e8ecf2;
   vertical-align: middle;
@@ -685,10 +706,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border-bottom: 2px solid #dde3ec;
 }
 .report-pres-body .section-title {
-  font-size: calc(15px + 3pt);
+  font-size: calc(15px + 4pt);
 }
 .report-pres-body .suggestion-item {
-  font-size: calc(14px + 3.5pt);
+  font-size: calc(14px + 4.5pt);
   padding: 12px 14px;
   margin-bottom: 8px;
   border: 1px solid #e8ecf2;
@@ -700,7 +721,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   margin-bottom: 0;
 }
 .report-pres-body .sug-date {
-  font-size: calc(12px + 3pt);
+  font-size: calc(12px + 4pt);
 }
 .report-pres-body .pt-view {
   padding: 20px 22px;
@@ -712,10 +733,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border-bottom: 3px solid #e4e8ef;
 }
 .report-pres-body .pt-header h2 {
-  font-size: calc(22px + 4pt);
+  font-size: calc(22px + 5pt);
 }
 .report-pres-body .pt-header .pt-period {
-  font-size: calc(14px + 3pt);
+  font-size: calc(14px + 4pt);
   margin-top: 8px;
 }
 .report-pres-body .pt-stats {
@@ -727,10 +748,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border: 1px solid #e2e6ed;
 }
 .report-pres-body .pt-stat .ps-num {
-  font-size: calc(24px + 4pt);
+  font-size: calc(24px + 5pt);
 }
 .report-pres-body .pt-stat .ps-label {
-  font-size: calc(11px + 3pt);
+  font-size: calc(11px + 4pt);
   margin-top: 4px;
 }
 .report-pres-body .pt-agg-block {
@@ -738,7 +759,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   padding-bottom: 4px;
 }
 .report-pres-body .pt-agg-title {
-  font-size: calc(16px + 3.5pt);
+  font-size: calc(16px + 4.5pt);
   margin-bottom: 14px;
   padding: 10px 12px 12px;
   background: linear-gradient(180deg, #eef2f8 0%, #fff 100%);
@@ -751,7 +772,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   margin-top: 4px;
 }
 .report-pres-body .pt-item {
-  font-size: calc(14px + 3.5pt);
+  font-size: calc(14px + 4.5pt);
   padding: 11px 14px;
   margin-bottom: 10px;
   background: #f7f9fc;
@@ -769,14 +790,14 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   opacity: 1;
 }
 .report-pres-body .pt-item .pi-cat {
-  font-size: calc(12px + 3pt);
+  font-size: calc(12px + 4pt);
   padding: 2px 10px;
 }
 .report-pres-body .pt-item .pi-stars {
-  font-size: calc(12px + 3pt);
+  font-size: calc(12px + 4pt);
 }
 .report-pres-body .pt-agg-empty {
-  font-size: calc(14px + 3pt);
+  font-size: calc(14px + 4pt);
   padding: 14px 12px;
   color: #888;
   background: #fafafa;
@@ -788,7 +809,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   padding-top: 10px;
 }
 .report-pres-body .pt-date-tag {
-  font-size: calc(11px + 3pt);
+  font-size: calc(11px + 4pt);
   color: #555;
   background: #eef2f8;
   padding: 2px 8px;
@@ -797,7 +818,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   font-weight: bold;
 }
 .report-pres-body .pt-view > p[style*='padding:10px'] {
-  font-size: calc(13px + 3pt) !important;
+  font-size: calc(13px + 4pt) !important;
   line-height: 1.5;
 }
 
@@ -989,6 +1010,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   <div id="reportPresBody" class="report-pres-body"></div>
   <canvas id="reportPresCanvas" class="report-pres-canvas" width="100" height="100" aria-hidden="true" title="가운데 드래그: 형광펜 · 좌우 끝 탭: 이전·다음 · 휠: 스크롤 · 우클릭: 형광 지우기 · 슬라이드 넘기면 형광 초기화"></canvas>
   <div class="report-pres-top-right">
+    <div class="pres-emp-nav">
+      <button type="button" onclick="presentationNavPrev()" title="이전 직원 (Shift + ←)">◀ 이전 직원</button>
+      <button type="button" onclick="presentationNavNext()" title="다음 직원 (Shift + →)">다음 직원 ▶</button>
+    </div>
     <button type="button" class="report-pres-close" onclick="closeReportPresentation()">닫기 (Esc)</button>
   </div>
   <div id="presScrollWidget" class="pres-scroll-widget">
@@ -1879,6 +1904,31 @@ function presScrollNext() {
   overlay.scrollBy({ top: (h * 0.9), behavior: 'smooth' });
 }
 
+async function navigatePresTab(dir) {
+  const tabs = Array.from(document.querySelectorAll('#reportTabs .report-tab'));
+  const activeTabs = tabs.filter(t => t.dataset.rtab && t.style.display !== 'none');
+  if (activeTabs.length <= 1) return;
+  let idx = activeTabs.findIndex(t => t.dataset.rtab === presentationNavRtab);
+  if (idx === -1) idx = 0;
+  idx = (idx + dir + activeTabs.length) % activeTabs.length;
+  
+  const targetTab = activeTabs[idx].dataset.rtab;
+  await showReportTab(targetTab);
+  presentationNavRtab = targetTab;
+  
+  const presBody = document.getElementById('reportPresBody');
+  presBody.innerHTML = document.getElementById('reportBody').innerHTML;
+  
+  updatePresSideNames();
+  clearPresCanvas();
+  const overlay = document.getElementById('reportPresOverlay');
+  if (overlay) overlay.scrollTop = 0;
+  updatePresScrollIndicator();
+}
+
+function presentationNavPrev() { navigatePresTab(-1); }
+function presentationNavNext() { navigatePresTab(1); }
+
 function updatePresSideNames() {
   const sideL = document.getElementById('presSideLeft');
   const sideR = document.getElementById('presSideRight');
@@ -1888,8 +1938,8 @@ function updatePresSideNames() {
     const emp = EMPLOYEES.find(e => e.idx === idx);
     let htmlStr = '';
     if (emp && emp.name) {
-      // 종배치 시 띄어쓰기 한 칸 추가하여 자연스럽게 함
-      htmlStr = emp.name.trim();
+      const chars = emp.name.trim().split('').map(c => c === ' ' ? '<br><br>' : c).join('<br>');
+      htmlStr = chars;
     }
     sideL.innerHTML = htmlStr;
     sideR.innerHTML = htmlStr;
@@ -2097,7 +2147,12 @@ function getFormattedDateAndDay(dateStr) {
   const d = new Date(dateStr);
   const dayName = days[d.getDay()];
   const dd = String(d.getDate()).padStart(2, '0');
-  return dayName ? `${dd}일(${dayName})` : '';
+  
+  let dayColor = '#1565c0'; // 평일 파란색 계열
+  if (d.getDay() === 0) dayColor = '#c62828'; // 일요일 빨간색
+  else if (d.getDay() === 6) dayColor = '#0277bd'; // 토요일 파란색
+  
+  return dayName ? `${dd}일<span style="color:${dayColor}; margin-left:1px;">(${dayName})</span>` : '';
 }
 
 async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = null) {
@@ -2163,7 +2218,7 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
   if (importantList.length) {
     html += importantList.map(i => {
       const dayStr = getFormattedDateAndDay(i._date);
-      return `<div class="pt-item">• ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
+      return `<div class="pt-item">• <span style="white-space: nowrap; margin-right: 6px;">${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}</span>${esc(i.content)}</div>`;
     }).join('');
   } else {
     html += '<p class="pt-agg-empty">해당 없음</p>';
@@ -2215,7 +2270,7 @@ async function generateEmpReportHtml(empIdx, s, e, isDaily = false, statsObj = n
       const dc = i.done ? ' pi-done' : '';
       const mark = i.done ? '✅' : '⬜';
       const dayStr = getFormattedDateAndDay(i._date);
-      return `<div class="pt-item${dc}">${mark} ${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}${esc(i.content)}</div>`;
+      return `<div class="pt-item${dc}">${mark} <span style="white-space: nowrap; margin-right: 6px;">${dayStr ? `<span class="pt-date-tag">${dayStr}</span>` : ''}${i.category ? `<span class="pi-cat">${esc(i.category)}</span>` : ''}</span>${esc(i.content)}</div>`;
     }).join('');
   } else {
     html += '<p class="pt-agg-empty">상세 내역 없음</p>';
@@ -2365,12 +2420,14 @@ document.addEventListener('keydown', (ev) => {
   }
   if (ev.key === 'ArrowLeft') {
     ev.preventDefault();
-    presScrollPrev();
+    if (ev.shiftKey) presentationNavPrev();
+    else presScrollPrev();
     return;
   }
   if (ev.key === 'ArrowRight') {
     ev.preventDefault();
-    presScrollNext();
+    if (ev.shiftKey) presentationNavNext();
+    else presScrollNext();
     return;
   }
 });
