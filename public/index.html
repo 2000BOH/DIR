@@ -1011,8 +1011,8 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   <canvas id="reportPresCanvas" class="report-pres-canvas" width="100" height="100" aria-hidden="true" title="가운데 드래그: 형광펜 · 좌우 끝 탭: 이전·다음 · 휠: 스크롤 · 우클릭: 형광 지우기 · 슬라이드 넘기면 형광 초기화"></canvas>
   <div class="report-pres-top-right">
     <div class="pres-emp-nav">
-      <button type="button" onclick="presentationNavPrev()" title="이전 직원 (Shift + ←)">◀ 이전 직원</button>
-      <button type="button" onclick="presentationNavNext()" title="다음 직원 (Shift + →)">다음 직원 ▶</button>
+      <button type="button" id="presNavPrevBtn" onclick="presentationNavPrev()" title="이전 직원 (Shift + ←)">◀ 이전 직원</button>
+      <button type="button" id="presNavNextBtn" onclick="presentationNavNext()" title="다음 직원 (Shift + →)">다음 직원 ▶</button>
     </div>
     <button type="button" class="report-pres-close" onclick="closeReportPresentation()">닫기 (Esc)</button>
   </div>
@@ -1866,7 +1866,40 @@ function getPresentationNavTabs() {
 }
 
 function updatePresentationNavVisibility() {
-  // 사용하지 않음 (updatePresScrollIndicator에서 화살표 표시를 제어)
+  const prevBtn = document.getElementById('presNavPrevBtn');
+  const nextBtn = document.getElementById('presNavNextBtn');
+  if (!prevBtn || !nextBtn) return;
+  
+  const tabs = Array.from(document.querySelectorAll('#reportTabs .report-tab'));
+  const activeTabs = tabs.filter(t => t.dataset.rtab && t.style.display !== 'none');
+  
+  if (activeTabs.length <= 1) {
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    return;
+  }
+  
+  prevBtn.style.display = '';
+  nextBtn.style.display = '';
+  
+  let idx = activeTabs.findIndex(t => t.dataset.rtab === presentationNavRtab);
+  if (idx === -1) idx = 0;
+  
+  const prevIdx = (idx - 1 + activeTabs.length) % activeTabs.length;
+  const nextIdx = (idx + 1) % activeTabs.length;
+  
+  const getLabel = (rtab) => {
+    if (rtab === 'overview') return '전체 현황';
+    const eIdx = parseInt(rtab.replace('emp', ''), 10);
+    const e = EMPLOYEES.find(x => x.idx === eIdx);
+    if (e && e.name) {
+      return e.name.split(' ')[0]; // 직급 떼고 이름만 반환
+    }
+    return rtab;
+  };
+
+  prevBtn.innerHTML = `◀ ${getLabel(activeTabs[prevIdx].dataset.rtab)}`;
+  nextBtn.innerHTML = `${getLabel(activeTabs[nextIdx].dataset.rtab)} ▶`;
 }
 
 function updatePresScrollIndicator() {
@@ -1924,6 +1957,7 @@ async function navigatePresTab(dir) {
   const overlay = document.getElementById('reportPresOverlay');
   if (overlay) overlay.scrollTop = 0;
   updatePresScrollIndicator();
+  updatePresentationNavVisibility();
 }
 
 function presentationNavPrev() { navigatePresTab(-1); }
@@ -2365,10 +2399,10 @@ async function openReportPresentation() {
     overlay.setAttribute('aria-hidden', 'false');
     document.body.classList.add('report-pres-open');
     document.body.style.overflow = 'hidden';
+    presentationNavRtab = document.querySelector('#reportTabs .report-tab.active')?.dataset.rtab || 'overview';
     updatePresentationNavVisibility();
     clearPresCanvas();
     resizePresCanvas();
-    presentationNavRtab = document.querySelector('#reportTabs .report-tab.active')?.dataset.rtab || 'overview';
     try {
       await overlay.requestFullscreen({ navigationUI: 'hide' });
     } catch (_) {}
