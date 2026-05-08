@@ -482,34 +482,65 @@ body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: va
   gap: 10px;
   align-items: center;
 }
-.report-pres-pagination {
+.pres-scroll-widget {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 5090;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  box-shadow: -2px 2px 12px rgba(0,0,0,0.1);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  background: rgba(255,255,255,.96);
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 1px 6px rgba(0,0,0,.12);
-  padding: 4px 4px;
-  font-size: 14px;
-  font-weight: bold;
+  padding: 10px 6px;
+  gap: 8px;
+  transition: opacity 0.2s;
 }
-.report-pres-pagination button {
+.pres-scroll-widget[hidden] {
+  display: none !important;
+}
+.pres-scroll-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 6px;
+  font-size: 16px;
   color: var(--blue-dark);
+  line-height: 1;
+  border-radius: 6px;
+}
+.pres-scroll-btn:hover {
+  background: #e8f0fe;
+}
+.pres-scroll-btn:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  background: none;
+}
+.pres-scroll-text {
+  font-size: 11px;
+  font-weight: bold;
+  color: #666;
+  text-align: center;
+  line-height: 1.4;
+}
+.pres-scroll-text b {
   font-size: 14px;
+  color: var(--blue);
 }
-.report-pres-pagination button:hover {
-  background: #f0f0f0;
-  border-radius: 4px;
+.pres-side-name { 
+  font-size: 65px; 
+  z-index: -1; 
+  letter-spacing: 5px; 
+  text-align: center; 
+  line-height: 1.15; 
+  writing-mode: vertical-rl; 
+  text-orientation: upright; 
 }
-.report-pres-pagination span {
-  margin: 0 6px;
-  color: #333;
-}
-.pres-side-name { font-size: 65px; z-index: 5020; letter-spacing: -1px; }
 @media (max-width: 1400px) { .pres-side-name { font-size: 45px; } }
 @media (max-width: 1100px) { .pres-side-name { display: none !important; } }
 .report-pres-close {
@@ -583,29 +614,29 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
 .report-pres-body {
   position: relative;
   z-index: 1;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 16px;
-  padding-top: 48px;
+  padding: 12px;
+  padding-top: 36px;
   box-sizing: border-box;
   min-height: 100%;
-  font-size: calc(16px + 2.5pt);
+  font-size: calc(16px + 3.5pt);
   line-height: 1.55;
 }
 @media (max-width: 768px) {
-  .report-pres-body { padding: 12px; padding-top: 44px; }
+  .report-pres-body { padding: 8px; padding-top: 36px; }
 }
 
-/* 프리젠테이션 전용: 글자 약 2~3pt↑ · 항목·구역 구분 강화 */
+/* 프리젠테이션 전용: 글자 약 3~4pt↑ · 항목·구역 구분 강화 */
 .report-pres-body .rpt-overview-jump {
   display: none; /* 프리젠테이션 시 직원 바로가기 숨김 */
 }
 .report-pres-body .rpt-overview-jump-label {
-  font-size: calc(13px + 2pt);
+  font-size: calc(13px + 3pt);
   font-weight: 800;
 }
 .report-pres-body .rpt-jump-btn {
-  font-size: calc(13px + 2pt);
+  font-size: calc(13px + 3pt);
   padding: 9px 14px;
 }
 .report-pres-body .stat-grid {
@@ -617,22 +648,22 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border: 1px solid #e2e6ed;
 }
 .report-pres-body .stat-box .stat-num {
-  font-size: calc(28px + 3pt);
+  font-size: calc(28px + 4pt);
 }
 .report-pres-body .stat-box .stat-label {
-  font-size: calc(12px + 2pt);
+  font-size: calc(12px + 3pt);
   margin-top: 6px;
 }
 .report-pres-body .emp-stat-table {
   border: 1px solid #d8dee8;
 }
 .report-pres-body .emp-stat-table thead th {
-  font-size: calc(13px + 2pt);
+  font-size: calc(13px + 3pt);
   padding: 12px 16px;
   border-bottom: 2px solid #c5cdd8;
 }
 .report-pres-body .emp-stat-table td {
-  font-size: calc(14px + 2.5pt);
+  font-size: calc(14px + 3.5pt);
   padding: 12px 16px;
   border-top: 2px solid #e8ecf2;
   vertical-align: middle;
@@ -654,10 +685,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border-bottom: 2px solid #dde3ec;
 }
 .report-pres-body .section-title {
-  font-size: calc(15px + 2pt);
+  font-size: calc(15px + 3pt);
 }
 .report-pres-body .suggestion-item {
-  font-size: calc(14px + 2.5pt);
+  font-size: calc(14px + 3.5pt);
   padding: 12px 14px;
   margin-bottom: 8px;
   border: 1px solid #e8ecf2;
@@ -669,10 +700,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   margin-bottom: 0;
 }
 .report-pres-body .sug-date {
-  font-size: calc(12px + 2pt);
+  font-size: calc(12px + 3pt);
 }
 .report-pres-body .pt-view {
-  padding: 28px 26px;
+  padding: 20px 22px;
   border: 1px solid #e0e4ea;
 }
 .report-pres-body .pt-header {
@@ -681,10 +712,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border-bottom: 3px solid #e4e8ef;
 }
 .report-pres-body .pt-header h2 {
-  font-size: calc(22px + 3pt);
+  font-size: calc(22px + 4pt);
 }
 .report-pres-body .pt-header .pt-period {
-  font-size: calc(14px + 2pt);
+  font-size: calc(14px + 3pt);
   margin-top: 8px;
 }
 .report-pres-body .pt-stats {
@@ -696,10 +727,10 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   border: 1px solid #e2e6ed;
 }
 .report-pres-body .pt-stat .ps-num {
-  font-size: calc(24px + 3pt);
+  font-size: calc(24px + 4pt);
 }
 .report-pres-body .pt-stat .ps-label {
-  font-size: calc(11px + 2pt);
+  font-size: calc(11px + 3pt);
   margin-top: 4px;
 }
 .report-pres-body .pt-agg-block {
@@ -707,7 +738,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   padding-bottom: 4px;
 }
 .report-pres-body .pt-agg-title {
-  font-size: calc(16px + 2.5pt);
+  font-size: calc(16px + 3.5pt);
   margin-bottom: 14px;
   padding: 10px 12px 12px;
   background: linear-gradient(180deg, #eef2f8 0%, #fff 100%);
@@ -720,7 +751,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   margin-top: 4px;
 }
 .report-pres-body .pt-item {
-  font-size: calc(14px + 2.5pt);
+  font-size: calc(14px + 3.5pt);
   padding: 11px 14px;
   margin-bottom: 10px;
   background: #f7f9fc;
@@ -738,14 +769,14 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   opacity: 1;
 }
 .report-pres-body .pt-item .pi-cat {
-  font-size: calc(12px + 2pt);
+  font-size: calc(12px + 3pt);
   padding: 2px 10px;
 }
 .report-pres-body .pt-item .pi-stars {
-  font-size: calc(12px + 2pt);
+  font-size: calc(12px + 3pt);
 }
 .report-pres-body .pt-agg-empty {
-  font-size: calc(14px + 2pt);
+  font-size: calc(14px + 3pt);
   padding: 14px 12px;
   color: #888;
   background: #fafafa;
@@ -757,7 +788,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   padding-top: 10px;
 }
 .report-pres-body .pt-date-tag {
-  font-size: calc(11px + 2pt);
+  font-size: calc(11px + 3pt);
   color: #555;
   background: #eef2f8;
   padding: 2px 8px;
@@ -766,7 +797,7 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
   font-weight: bold;
 }
 .report-pres-body .pt-view > p[style*='padding:10px'] {
-  font-size: calc(13px + 2pt) !important;
+  font-size: calc(13px + 3pt) !important;
   line-height: 1.5;
 }
 
@@ -957,17 +988,13 @@ body.report-pres-open #reportTabs .report-tab[data-rtab="overview"] {
 <div id="reportPresOverlay" class="report-pres-overlay" hidden aria-hidden="true">
   <div id="reportPresBody" class="report-pres-body"></div>
   <canvas id="reportPresCanvas" class="report-pres-canvas" width="100" height="100" aria-hidden="true" title="가운데 드래그: 형광펜 · 좌우 끝 탭: 이전·다음 · 휠: 스크롤 · 우클릭: 형광 지우기 · 슬라이드 넘기면 형광 초기화"></canvas>
-  <div id="reportPresHitPrev" class="report-pres-edge-hit report-pres-edge-hit--prev" role="presentation" aria-hidden="true" title="이전 페이지" onclick="void presentationNavPrev()"></div>
-  <div id="reportPresHitNext" class="report-pres-edge-hit report-pres-edge-hit--next" role="presentation" aria-hidden="true" title="다음 페이지" onclick="void presentationNavNext()"></div>
-  <button type="button" id="reportPresPrev" class="report-pres-nav report-pres-nav-prev" hidden aria-label="이전 직원" onclick="presentationNavPrev()">‹</button>
-  <button type="button" id="reportPresNext" class="report-pres-nav report-pres-nav-next" hidden aria-label="다음 직원" onclick="presentationNavNext()">›</button>
   <div class="report-pres-top-right">
-    <div class="report-pres-pagination">
-      <button type="button" onclick="presScrollPrev()" title="위로 스크롤 (이전)">◀</button>
-      <span id="presPageIndicator">1 / 1</span>
-      <button type="button" onclick="presScrollNext()" title="아래로 스크롤 (다음)">▶</button>
-    </div>
     <button type="button" class="report-pres-close" onclick="closeReportPresentation()">닫기 (Esc)</button>
+  </div>
+  <div id="presScrollWidget" class="pres-scroll-widget">
+    <button type="button" id="presScrollUp" class="pres-scroll-btn" onclick="presScrollPrev()" title="위로 스크롤">▲</button>
+    <div class="pres-scroll-text">페이지<br><b id="presPageIndicator">1 / 1</b></div>
+    <button type="button" id="presScrollDown" class="pres-scroll-btn" onclick="presScrollNext()" title="아래로 스크롤">▼</button>
   </div>
   <div id="presSideLeft" class="user-side-name user-side-left pres-side-name" style="display: none;"></div>
   <div id="presSideRight" class="user-side-name user-side-right pres-side-name" style="display: none;"></div>
@@ -1814,35 +1841,28 @@ function getPresentationNavTabs() {
 }
 
 function updatePresentationNavVisibility() {
-  const prev = document.getElementById('reportPresPrev');
-  const next = document.getElementById('reportPresNext');
-  const hitP = document.getElementById('reportPresHitPrev');
-  const hitN = document.getElementById('reportPresHitNext');
-  const tabs = getPresentationNavTabs();
-
-  if (tabs.length <= 1) {
-    if (prev) prev.hidden = true;
-    if (next) next.hidden = true;
-    if (hitP) hitP.hidden = true;
-    if (hitN) hitN.hidden = true;
-    return;
-  }
-  if (prev) prev.hidden = false;
-  if (next) next.hidden = false;
-  if (hitP) hitP.hidden = false;
-  if (hitN) hitN.hidden = false;
+  // 사용하지 않음 (updatePresScrollIndicator에서 화살표 표시를 제어)
 }
 
 function updatePresScrollIndicator() {
   const overlay = document.getElementById('reportPresOverlay');
   const indicator = document.getElementById('presPageIndicator');
-  if (!overlay || !indicator || overlay.hasAttribute('hidden')) return;
+  const upBtn = document.getElementById('presScrollUp');
+  const downBtn = document.getElementById('presScrollDown');
+
+  if (!overlay || overlay.hasAttribute('hidden')) return;
   const h = overlay.clientHeight || window.innerHeight;
   const total = Math.max(1, Math.ceil(overlay.scrollHeight / h));
   let current = Math.floor((overlay.scrollTop + h/2) / h) + 1;
   if (current < 1) current = 1;
   if (current > total) current = total;
-  indicator.textContent = `${current} / ${total}`;
+  
+  if (indicator) {
+    indicator.textContent = `${current} / ${total}`;
+  }
+
+  if (upBtn) upBtn.disabled = (current <= 1);
+  if (downBtn) downBtn.disabled = (current >= total);
 }
 
 function presScrollPrev() {
@@ -1866,11 +1886,15 @@ function updatePresSideNames() {
   if (presentationNavRtab && presentationNavRtab.startsWith('emp')) {
     const idx = parseInt(presentationNavRtab.replace('emp', ''), 10);
     const emp = EMPLOYEES.find(e => e.idx === idx);
-    const fullName = emp && emp.name ? emp.name : '';
-    sideL.textContent = fullName;
-    sideR.textContent = fullName;
-    sideL.style.display = fullName ? '' : 'none';
-    sideR.style.display = fullName ? '' : 'none';
+    let htmlStr = '';
+    if (emp && emp.name) {
+      // 종배치 시 띄어쓰기 한 칸 추가하여 자연스럽게 함
+      htmlStr = emp.name.trim();
+    }
+    sideL.innerHTML = htmlStr;
+    sideR.innerHTML = htmlStr;
+    sideL.style.display = htmlStr ? '' : 'none';
+    sideR.style.display = htmlStr ? '' : 'none';
     const c = getEmpColor(idx);
     sideL.style.color = c.color;
     sideR.style.color = c.color;
@@ -2341,12 +2365,12 @@ document.addEventListener('keydown', (ev) => {
   }
   if (ev.key === 'ArrowLeft') {
     ev.preventDefault();
-    presentationNavPrev();
+    presScrollPrev();
     return;
   }
   if (ev.key === 'ArrowRight') {
     ev.preventDefault();
-    presentationNavNext();
+    presScrollNext();
     return;
   }
 });
