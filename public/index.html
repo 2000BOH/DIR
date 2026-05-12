@@ -1185,8 +1185,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (bootHint) bootHint.removeAttribute('hidden');
   }
 
-  const firstActive = EMPLOYEES.find(isEmpSlotActive);
-  curEmpIdx = firstActive ? firstActive.idx : EMPLOYEES[0].idx;
+  let preferredIdx = null;
+  try {
+    const saved = localStorage.getItem('preferredEmpIdx');
+    if (saved) preferredIdx = parseInt(saved, 10);
+  } catch (_) {}
+
+  const emp = preferredIdx ? EMPLOYEES.find(e => e.idx === preferredIdx && isEmpSlotActive(e)) : null;
+  if (emp) {
+    curEmpIdx = preferredIdx;
+  } else {
+    const firstActive = EMPLOYEES.find(isEmpSlotActive);
+    curEmpIdx = firstActive ? firstActive.idx : EMPLOYEES[0].idx;
+  }
   renderEmpButtons();
   applyEmpTheme(curEmpIdx);
   document.getElementById('currentDate').value = curDate;
@@ -1392,6 +1403,7 @@ async function switchEmployee(idx) {
   if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
   await saveNow();
   curEmpIdx = idx;
+  try { localStorage.setItem('preferredEmpIdx', idx); } catch (_) {}
   renderEmpButtons();
   applyEmpTheme(idx);
   await loadLog();
