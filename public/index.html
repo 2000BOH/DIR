@@ -1863,7 +1863,10 @@ function renderReportTabs() {
 }
 
 function getPresentationActiveEmpIndices() {
-  return EMPLOYEES.filter(isEmpSlotActive).map(e => e.idx).sort((a, b) => a - b);
+  return EMPLOYEES.filter(isEmpSlotActive)
+    .map(e => e.idx)
+    .filter(idx => idx !== 2 && idx !== 7) // 2(이수용 차장), 7(문환헌 사원) 스킵
+    .sort((a, b) => a - b);
 }
 
 /** 프리젠테이션 화살표 순서: 발표자가 지정되면 그 분의 페이지만 이동, 아니면 전체 인원 */
