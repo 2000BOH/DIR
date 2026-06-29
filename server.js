@@ -53,13 +53,13 @@ initDb();
 
 const EMPLOYEES = [
   { idx: 1, name: '양남식 차장', active: true },
-  { idx: 2, name: '이수용 차장', active: false },
-  { idx: 3, name: '이태욱 과장', active: true },
+  { idx: 8, name: '이충희 과장', active: true },
   { idx: 4, name: '유태형 과장', active: true },
   { idx: 5, name: '허아름 대리', active: true },
-  { idx: 6, name: '김동훈 대리', active: true },
   { idx: 7, name: '문환헌 사원', active: true },
-  { idx: 8, name: '', active: false },
+  { idx: 2, name: '이수용 차장', active: false },
+  { idx: 3, name: '이태욱 과장', active: false },
+  { idx: 6, name: '김동훈 대리', active: false },
   { idx: 9, name: '', active: false },
   { idx: 10, name: '', active: false },
 ];
